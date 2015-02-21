@@ -138,6 +138,15 @@ public:
 		}
 	}
 
+	Node*& findLeft(Node* node){
+
+		if (node->left != NULL)
+			return findLeft(node->left);
+		else
+			return node;
+		
+	}
+
 	void directLeftTraverse() {
 
 		/*прямой левый обход*/
@@ -160,7 +169,7 @@ int main() {
 
 	Tree tree;
 
-	ifstream fin("in.txt");
+ 	ifstream fin("in.txt");
 	int tmp = 0;
 
 	while (!fin.eof()) {
@@ -171,7 +180,8 @@ int main() {
 
 	Node* node = new Node();
 
-	tree.deleteNode(177, tree.root);
+	node = tree.findLeft(tree.findNode(30, tree.root));
+	//tree.deleteNode(177, tree.root);
 
 	return 0;
 }
