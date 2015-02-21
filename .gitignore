@@ -73,3 +73,20 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Visual studio files
+# ========================
+
+*.sdf
+*.sln
+*.suo
+*.aps
+*.rc
+*.vcxproj
+*.filters
+*.ilk
+*.pdb
+*.res
+*.idb
+*.log
+*.tlog
