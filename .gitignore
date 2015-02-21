@@ -3,4 +3,7 @@
 *.sln
 *.class
 *.sdf
+*.rc
+*.vcxproj
+*.h
 target
