@@ -1,0 +1,6 @@
+*.in
+*.out
+*.sln
+*.class
+*.sdf
+target
