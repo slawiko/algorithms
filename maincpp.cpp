@@ -12,6 +12,7 @@ struct Node {
 	int height;
 	bool rightSon;
 	bool leftSon;
+	bool half_path;
 	Node *right;
 	Node *left;
 	Node *father;
@@ -22,6 +23,7 @@ struct Node {
 		this->height = INIT_HEIGHT;
 		this->rightSon = false;
 		this->leftSon = false;
+		this->half_path = false;
 		this->father = NULL;
 		this->right = NULL;
 		this->left = NULL;
@@ -33,6 +35,7 @@ struct Node {
 		this->height = INIT_HEIGHT;
 		this->rightSon = false;
 		this->leftSon = false;
+		this->half_path = false;
 		this->father = NULL;
 		this->right = NULL;
 		this->left = NULL;
@@ -44,6 +47,7 @@ class Tree {
 public:
 
 	Node* root = new Node();
+	int maxHalfPath = 0;
 
 	void addNode(int addWeight, Node* node) {
 
@@ -79,14 +83,6 @@ public:
 		}
 		
 		return;
-	}
-
-	int heightNode(Node* node) {
-
-		if (node)
-			return heightNode(node->right) >= heightNode(node->left) ? node->height = 1 + heightNode(node->right) : node->height = 1 + heightNode(node->left);
-		else
-			return -1;
 	}
 
 	void halfPath() {
@@ -153,12 +149,16 @@ public:
 		}
 	}
 
-	Node*& findLeft(Node* node){
+	void findMaxHalfPath() {
 
-		if (node->left != NULL)
-			return findLeft(node->left);
-		else
-			return node;
+		maxHalfPath = this->heightNode(this->root);
+
+		if ((root->right) && (root->left)) {
+			if (root->right->height >= root->left->height)
+				maxHalfPath += root->right->height;
+			else
+				maxHalfPath += root->left->height;
+		}
 	}
 
 	void directLeftTraverseAndPrinting(ofstream& out, Node* node) {
@@ -169,6 +169,22 @@ public:
 			directLeftTraverseAndPrinting(out, node->left);
 			directLeftTraverseAndPrinting(out, node->right);
 		}
+	}
+
+	int heightNode(Node* node) {
+
+		if (node)
+			return heightNode(node->right) >= heightNode(node->left) ? node->height = 1 + heightNode(node->right) : node->height = 1 + heightNode(node->left);
+		else
+			return -1;
+	}
+
+	Node*& findLeft(Node* node){
+
+		if (node->left != NULL)
+			return findLeft(node->left);
+		else
+			return node;
 	}
 
 	Node*& findNode(int findWeight, Node* node) {
@@ -199,7 +215,12 @@ int main() {
 		tree.addNode(tmp, tree.root);
 	}
 
-	tree.root->height = tree.heightNode(tree.root);
+	tree.findMaxHalfPath();
+
+
+
+
+
 
 	tree.directLeftTraverseAndPrinting(fout, tree.root);
 
