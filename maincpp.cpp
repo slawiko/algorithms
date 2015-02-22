@@ -4,8 +4,7 @@
 using namespace std;
 
 int ROOT = INT_MAX;
-int ROOT_HEIGHT = 0;
-int INIT_HEIGHT = -1;
+int INIT_HEIGHT = INT_MAX;
 
 struct Node {
 
@@ -20,7 +19,7 @@ struct Node {
 	Node() {
 
 		this->weight = ROOT;
-		this->height = ROOT_HEIGHT;
+		this->height = INIT_HEIGHT;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->father = NULL;
@@ -80,6 +79,14 @@ public:
 		}
 		
 		return;
+	}
+
+	int heightNode(Node* node) {
+
+		if (node)
+			return heightNode(node->right) >= heightNode(node->left) ? node->height = 1 + heightNode(node->right) : node->height = 1 + heightNode(node->left);
+		else
+			return -1;
 	}
 
 	void halfPath() {
@@ -185,9 +192,11 @@ int main() {
 		tree.addNode(tmp, tree.root);
 	}
 
+	tree.root->height = tree.heightNode(tree.root);
+
 	//Node* node = new Node();
 
-	tree.rightDelete(30);
+	//tree.rightDelete(30);
 
 	return 0;
 }
