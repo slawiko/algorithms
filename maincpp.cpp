@@ -4,13 +4,13 @@
 using namespace std;
 
 int ROOT = INT_MAX;
-int ROOT_DEPTH = 0;
-int INIT_DEPTH = -1;
+int ROOT_HEIGHT = 0;
+int INIT_HEIGHT = -1;
 
 struct Node {
 
 	int weight;
-	int depth;
+	int height;
 	bool rightSon;
 	bool leftSon;
 	Node *right;
@@ -20,7 +20,7 @@ struct Node {
 	Node() {
 
 		this->weight = ROOT;
-		this->depth = ROOT_DEPTH;
+		this->height = ROOT_HEIGHT;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->father = NULL;
@@ -31,8 +31,7 @@ struct Node {
 	Node(int weight) {
 
 		this->weight = weight;
-		this->depth = INIT_DEPTH
-			;
+		this->height = INIT_HEIGHT;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->father = NULL;
