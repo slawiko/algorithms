@@ -4,6 +4,8 @@
 using namespace std;
 
 int ROOT = INT_MAX;
+int ROOT_DEPTH = 0;
+int INIT_DEPTH = -1;
 
 struct Node {
 
@@ -18,7 +20,7 @@ struct Node {
 	Node() {
 
 		this->weight = ROOT;
-		this->depth = 0; //??????
+		this->depth = ROOT_DEPTH;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->father = NULL;
@@ -29,7 +31,8 @@ struct Node {
 	Node(int weight) {
 
 		this->weight = weight;
-		this->depth = 0; //??????
+		this->depth = INIT_DEPTH
+			;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->father = NULL;
