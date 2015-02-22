@@ -161,9 +161,14 @@ public:
 			return node;
 	}
 
-	void directLeftTraverse() {
+	void directLeftTraverseAndPrinting(ofstream& out, Node* node) {
 
-		/*прямой левый обход*/
+		if (node) {
+
+			out << node->weight << endl;
+			directLeftTraverseAndPrinting(out, node->left);
+			directLeftTraverseAndPrinting(out, node->right);
+		}
 	}
 
 	Node*& findNode(int findWeight, Node* node) {
@@ -184,6 +189,8 @@ int main() {
 	Tree tree;
 
  	ifstream fin("in.txt");
+	ofstream fout("out.txt");
+
 	int tmp = 0;
 
 	while (!fin.eof()) {
@@ -194,9 +201,9 @@ int main() {
 
 	tree.root->height = tree.heightNode(tree.root);
 
-	//Node* node = new Node();
+	tree.directLeftTraverseAndPrinting(fout, tree.root);
 
-	//tree.rightDelete(30);
-
+	fin.close();
+	fout.close();
 	return 0;
 }
