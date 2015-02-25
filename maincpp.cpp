@@ -3,27 +3,34 @@
 
 using namespace std;
 
-int ROOT = INT_MAX;
-int INIT_HEIGHT = INT_MAX;
+int ROOT_INIT = INT_MAX;
+int HEIGHT_INIT = 0;
+int LEAVES_GAVES_HEIGHT_INIT = -1;
+int MAX_PATH_COUNT_INIT = 0;
+
 
 struct Node {
 
 	int weight;
 	int height;
+	int leavesGavesHeight;
+	int maxPathCount;
 	bool rightSon;
 	bool leftSon;
-	bool half_path;
+	bool halfPathRoot;
 	Node *right;
 	Node *left;
 	Node *father;
 	
 	Node() {
 
-		this->weight = ROOT;
-		this->height = INIT_HEIGHT;
+		this->weight = ROOT_INIT;
+		this->height = HEIGHT_INIT;
+		this->leavesGavesHeight = LEAVES_GAVES_HEIGHT_INIT;
+		this->maxPathCount = MAX_PATH_COUNT_INIT;
 		this->rightSon = false;
 		this->leftSon = false;
-		this->half_path = false;
+		this->halfPathRoot = false;
 		this->father = NULL;
 		this->right = NULL;
 		this->left = NULL;
@@ -32,10 +39,12 @@ struct Node {
 	Node(int weight) {
 
 		this->weight = weight;
-		this->height = INIT_HEIGHT;
+		this->height = HEIGHT_INIT;
+		this->leavesGavesHeight = LEAVES_GAVES_HEIGHT_INIT;
+		this->maxPathCount = MAX_PATH_COUNT_INIT;
 		this->rightSon = false;
 		this->leftSon = false;
-		this->half_path = false;
+		this->halfPathRoot = false;
 		this->father = NULL;
 		this->right = NULL;
 		this->left = NULL;
@@ -51,14 +60,16 @@ public:
 
 	void addNode(int addWeight, Node* node) {
 
-		if (this->root->weight == ROOT) {
+		if (this->root->weight == ROOT_INIT) {
 
 			this->root->weight = addWeight;
 		}
 		else if (addWeight > node->weight) {
-				
-			if (node->right != NULL)
+			
+			if (node->right != NULL) {
+
 				addNode(addWeight, node->right);
+			}
 			else {
 
 				Node* temp = new Node();
@@ -70,8 +81,10 @@ public:
 		}
 		else if (addWeight < node->weight) {
 
-			if (node->left != NULL)
+			if (node->left != NULL) {
+
 				addNode(addWeight, node->left);
+			}
 			else {
 
 				Node* temp = new Node();
@@ -85,9 +98,54 @@ public:
 		return;
 	}
 
-	void halfPath() {
+	void reverseLeftTraverse(Node* node) {
 
-		/*основной алгоритм*/
+		if (node) {
+
+			reverseLeftTraverse(node->left);
+			reverseLeftTraverse(node->right);
+			solve(node);
+		}
+	}
+
+	void solve(Node* node) { //shitName
+
+		if (node) {
+
+			if (!node->left && !node->right) {
+
+				node->height = 0;
+				node->leavesGavesHeight = 1;
+			}
+			else if (node->left && !node->right) {
+
+				node->height = node->left->height + 1;
+				node->leavesGavesHeight = node->left->leavesGavesHeight;
+			}
+			else if (!node->left && node->right) {
+
+				node->height = node->right->height + 1;
+				node->leavesGavesHeight = node->right->leavesGavesHeight;
+			}
+			else {
+
+				if (node->left->height > node->right->height) {
+
+					node->height = node->left->height + 1;
+					node->leavesGavesHeight = node->left->leavesGavesHeight;
+				}
+				else if (node->left->height == node->right->height) {
+
+					node->height = node->left->height + 1;
+					node->leavesGavesHeight = node->left->leavesGavesHeight + node->right->leavesGavesHeight;
+				}
+				else {
+
+					node->height = node->right->height + 1;
+					node->leavesGavesHeight = node->right->leavesGavesHeight;
+				}
+			}
+		}
 	}
 
 	void rightDelete(int deleteWeight) {
@@ -95,8 +153,10 @@ public:
 		Node* tmp = new Node();
 		tmp = findNode(deleteWeight, root);
 
-		if (tmp == NULL)
+		if (tmp == NULL) {
+
 			return;
+		}
 		else if ((tmp->left == NULL) && (tmp->right == NULL)) {
 
 			if (tmp->rightSon) {
@@ -149,54 +209,58 @@ public:
 		}
 	}
 
-	void findMaxHalfPath() {
-
-		maxHalfPath = this->heightNode(this->root);
-
-		if ((root->right) && (root->left)) {
-			if (root->right->height >= root->left->height)
-				maxHalfPath += root->right->height;
-			else
-				maxHalfPath += root->left->height;
-		}
-	}
-
-	void directLeftTraverseAndPrinting(ofstream& out, Node* node) {
+	void directLeftTraversePrinting(ofstream& out, Node* node) {
 
 		if (node) {
 
 			out << node->weight << endl;
-			directLeftTraverseAndPrinting(out, node->left);
-			directLeftTraverseAndPrinting(out, node->right);
+			directLeftTraversePrinting(out, node->left);
+			directLeftTraversePrinting(out, node->right);
 		}
 	}
 
 	int heightNode(Node* node) {
 
-		if (node)
+		if (node) {
+
 			return heightNode(node->right) >= heightNode(node->left) ? node->height = 1 + heightNode(node->right) : node->height = 1 + heightNode(node->left);
-		else
+		}
+		else {
+
 			return -1;
+		}
 	}
 
 	Node*& findLeft(Node* node){
 
-		if (node->left != NULL)
+		if (node->left != NULL) {
+
 			return findLeft(node->left);
-		else
+		}
+		else {
+
 			return node;
+		}
 	}
 
 	Node*& findNode(int findWeight, Node* node) {
 
-		if (node == NULL)
+		if (node == NULL) {
+
 			return node;
-		else if (node->weight == findWeight)
+		}
+		else if (node->weight == findWeight) {
+
 			return node;
-		else if (node->weight > findWeight)
+		}
+		else if (node->weight > findWeight) {
+
 			return findNode(findWeight, node->left);
-		else 
+		}
+		else {
+
 			return findNode(findWeight, node->right);
+		}
 	}
 };
 
@@ -215,14 +279,10 @@ int main() {
 		tree.addNode(tmp, tree.root);
 	}
 
-	tree.findMaxHalfPath();
 
+	tree.reverseLeftTraverse(tree.root);
 
-
-
-
-
-	tree.directLeftTraverseAndPrinting(fout, tree.root);
+	tree.directLeftTraversePrinting(fout, tree.root);
 
 	fin.close();
 	fout.close();
