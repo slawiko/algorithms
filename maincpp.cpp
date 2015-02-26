@@ -5,19 +5,15 @@ using namespace std;
 
 int ROOT_INIT = INT_MAX;
 int HEIGHT_INIT = 0;
-int LEAVES_GAVES_HEIGHT_INIT = -1;
-int MAX_PATH_COUNT_INIT = 0;
-
 
 struct Node {
 
 	int weight;
 	int height;
-	int leavesGavesHeight;
-	int maxPathCount;
 	bool rightSon;
 	bool leftSon;
 	bool halfPathRoot;
+	bool halfPathNode;
 	Node *right;
 	Node *left;
 	Node *father;
@@ -26,11 +22,10 @@ struct Node {
 
 		this->weight = ROOT_INIT;
 		this->height = HEIGHT_INIT;
-		this->leavesGavesHeight = LEAVES_GAVES_HEIGHT_INIT;
-		this->maxPathCount = MAX_PATH_COUNT_INIT;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->halfPathRoot = false;
+		this->halfPathNode = false;
 		this->father = NULL;
 		this->right = NULL;
 		this->left = NULL;
@@ -40,11 +35,10 @@ struct Node {
 
 		this->weight = weight;
 		this->height = HEIGHT_INIT;
-		this->leavesGavesHeight = LEAVES_GAVES_HEIGHT_INIT;
-		this->maxPathCount = MAX_PATH_COUNT_INIT;
 		this->rightSon = false;
 		this->leftSon = false;
 		this->halfPathRoot = false;
+		this->halfPathNode = false;
 		this->father = NULL;
 		this->right = NULL;
 		this->left = NULL;
@@ -56,7 +50,8 @@ class Tree {
 public:
 
 	Node* root = new Node();
-	int maxHalfPath = 0;
+	int maxSumHeightSon = 0;
+	int i = 0;   //фигня
 
 	void addNode(int addWeight, Node* node) {
 
@@ -98,51 +93,185 @@ public:
 		return;
 	}
 
-	void reverseLeftTraverse(Node* node) {
+	void reverseLeftTraverseHeight(Node* node) {
 
 		if (node) {
 
-			reverseLeftTraverse(node->left);
-			reverseLeftTraverse(node->right);
-			solve(node);
+			reverseLeftTraverseHeight(node->left);
+			reverseLeftTraverseHeight(node->right);
+			heightNode(node);
 		}
 	}
 
-	void solve(Node* node) { //shitName
+	void directLeftTraversePathNode(Node* node) {
+
+		if (node) {
+
+			if (!node->father && node->height >= maxSumHeightSon) {
+
+				node->halfPathRoot = true;
+				node->halfPathNode = true;
+
+				pathNode(node->left);
+				pathNode(node->right);
+			}
+
+			if (node->left && node->right) {
+
+				if (node->left->height + node->right->height == maxSumHeightSon) {
+
+					node->halfPathRoot = true;
+					node->halfPathNode = true;
+
+					pathNode(node->left);
+					pathNode(node->right);
+				}	
+			}
+			else if (!node->left && node->right) {
+
+				if (node->right->height == maxSumHeightSon) {
+
+					node->halfPathRoot = true;
+					node->halfPathNode = true;
+
+					pathNode(node->right);
+				}
+			}
+			else if (node->left && !node->right) {
+
+				if (node->left->height == maxSumHeightSon) {
+
+					node->halfPathRoot = true;
+					node->halfPathNode = true;
+
+					pathNode(node->left);
+				}
+			}
+
+			directLeftTraversePathNode(node->left);
+			directLeftTraversePathNode(node->right);
+		}
+	}
+
+	void pathNode(Node* node) {
+
+		if (node) {
+
+			node->halfPathNode = true;
+			
+			if (!node->left && !node->right) {
+
+				return;
+			}
+			else if (!node->left && node->right) {
+
+				pathNode(node->right);
+			}
+			else if (node->left && !node->right) {
+
+				pathNode(node->left);
+			}
+			else {
+
+				if (node->left->height > node->right->height) {
+
+					pathNode(node->left);
+				}
+				else if (node->left->height < node->right->height) {
+
+					pathNode(node->right);
+				}
+				else {
+
+					pathNode(node->left);
+					pathNode(node->right);
+				}
+			}
+		}
+	}
+
+	void internalLeftTraverse(Node* node) {
+
+		if (i < 2) {
+
+			if (node) {
+
+				bool flag = false;
+
+				internalLeftTraverse(node->left);
+				secondPlace(node);
+				internalLeftTraverse(node->right);
+			}
+		}
+	}
+
+	void secondPlace(Node* node) {
+
+		if (node->halfPathNode) {
+
+			i++;
+		}
+		if (i == 2) {
+
+			rightDelete(node->weight);
+			return;
+		}
+	}
+
+	void directLeftTraversePrinting(ofstream& out, Node* node) {
+
+		if (node) {
+
+			out << node->weight << endl;
+			directLeftTraversePrinting(out, node->left);
+			directLeftTraversePrinting(out, node->right);
+		}
+	}
+
+	void heightNode(Node* node) {
 
 		if (node) {
 
 			if (!node->left && !node->right) {
 
 				node->height = 0;
-				node->leavesGavesHeight = 1;
 			}
 			else if (node->left && !node->right) {
 
 				node->height = node->left->height + 1;
-				node->leavesGavesHeight = node->left->leavesGavesHeight;
+
+				if ((node->left->height > maxSumHeightSon) && (node->father)) {
+
+					maxSumHeightSon = node->left->height;
+				}
 			}
 			else if (!node->left && node->right) {
 
 				node->height = node->right->height + 1;
-				node->leavesGavesHeight = node->right->leavesGavesHeight;
+
+				if ((node->right->height > maxSumHeightSon) && (node->father)) {
+
+					maxSumHeightSon = node->right->height;
+				}
 			}
 			else {
 
 				if (node->left->height > node->right->height) {
 
 					node->height = node->left->height + 1;
-					node->leavesGavesHeight = node->left->leavesGavesHeight;
 				}
 				else if (node->left->height == node->right->height) {
 
 					node->height = node->left->height + 1;
-					node->leavesGavesHeight = node->left->leavesGavesHeight + node->right->leavesGavesHeight;
 				}
 				else {
 
 					node->height = node->right->height + 1;
-					node->leavesGavesHeight = node->right->leavesGavesHeight;
+				}
+
+				if ((node->left->height + node->right->height > maxSumHeightSon) && (node->father)) {
+
+					maxSumHeightSon = node->left->height + node->right->height;
 				}
 			}
 		}
@@ -209,28 +338,6 @@ public:
 		}
 	}
 
-	void directLeftTraversePrinting(ofstream& out, Node* node) {
-
-		if (node) {
-
-			out << node->weight << endl;
-			directLeftTraversePrinting(out, node->left);
-			directLeftTraversePrinting(out, node->right);
-		}
-	}
-
-	int heightNode(Node* node) {
-
-		if (node) {
-
-			return heightNode(node->right) >= heightNode(node->left) ? node->height = 1 + heightNode(node->right) : node->height = 1 + heightNode(node->left);
-		}
-		else {
-
-			return -1;
-		}
-	}
-
 	Node*& findLeft(Node* node){
 
 		if (node->left != NULL) {
@@ -279,8 +386,11 @@ int main() {
 		tree.addNode(tmp, tree.root);
 	}
 
+	tree.reverseLeftTraverseHeight(tree.root);
 
-	tree.reverseLeftTraverse(tree.root);
+	tree.directLeftTraversePathNode(tree.root);
+
+	tree.internalLeftTraverse(tree.root);
 
 	tree.directLeftTraversePrinting(fout, tree.root);
 

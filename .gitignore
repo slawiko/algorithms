@@ -90,3 +90,8 @@ $RECYCLE.BIN/
 *.idb
 *.log
 *.tlog
+
+# Other
+# ========================
+
+*.txt
