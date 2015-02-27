@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+//#pragma comment(linker, "/STACK:16777216")
 
 using namespace std;
 
@@ -58,10 +59,12 @@ public:
 		if (this->root->weight == ROOT_INIT) {
 
 			this->root->weight = addWeight;
+			return;
 		}
-		else if (addWeight > node->weight) {
+
+		if (addWeight > node->weight) {
 			
-			if (node->right != NULL) {
+			if (node->right) {
 
 				addNode(addWeight, node->right);
 			}
@@ -76,7 +79,7 @@ public:
 		}
 		else if (addWeight < node->weight) {
 
-			if (node->left != NULL) {
+			if (node->left) {
 
 				addNode(addWeight, node->left);
 			}
@@ -89,19 +92,12 @@ public:
 				node->left->leftSon = true;
 			}
 		}
-		
-		return;
 	}
 
-	void reverseLeftTraverseHeight(Node* node) {
 
-		if (node) {
 
-			reverseLeftTraverseHeight(node->left);
-			reverseLeftTraverseHeight(node->right);
-			heightNode(node);
-		}
-	}
+
+
 
 	void directLeftTraversePathNode(Node* node) {
 
@@ -196,8 +192,6 @@ public:
 
 			if (node) {
 
-				bool flag = false;
-
 				internalLeftTraverse(node->left);
 				secondPlace(node);
 				internalLeftTraverse(node->right);
@@ -218,16 +212,12 @@ public:
 		}
 	}
 
-	void directLeftTraversePrinting(ofstream& out, Node* node) {
 
-		if (node) {
 
-			out << node->weight << endl;
-			directLeftTraversePrinting(out, node->left);
-			directLeftTraversePrinting(out, node->right);
-		}
-	}
 
+
+
+	
 	void heightNode(Node* node) {
 
 		if (node) {
@@ -240,7 +230,7 @@ public:
 
 				node->height = node->left->height + 1;
 
-				if ((node->left->height > maxSumHeightSon) && (node->father)) {
+				if (node->left->height > maxSumHeightSon) {
 
 					maxSumHeightSon = node->left->height;
 				}
@@ -249,7 +239,7 @@ public:
 
 				node->height = node->right->height + 1;
 
-				if ((node->right->height > maxSumHeightSon) && (node->father)) {
+				if (node->right->height > maxSumHeightSon) {
 
 					maxSumHeightSon = node->right->height;
 				}
@@ -269,11 +259,31 @@ public:
 					node->height = node->right->height + 1;
 				}
 
-				if ((node->left->height + node->right->height > maxSumHeightSon) && (node->father)) {
+				if (node->left->height + node->right->height > maxSumHeightSon) {
 
 					maxSumHeightSon = node->left->height + node->right->height;
 				}
 			}
+		}
+	}
+
+	void reverseLeftTraverseHeight(Node* node) {
+
+		if (node) {
+
+			reverseLeftTraverseHeight(node->left);
+			reverseLeftTraverseHeight(node->right);
+			heightNode(node);
+		}
+	}
+
+	void directLeftTraversePrinting(ofstream& out, Node* node) {
+
+		if (node) {
+
+			out << node->weight << endl;
+			directLeftTraversePrinting(out, node->left);
+			directLeftTraversePrinting(out, node->right);
 		}
 	}
 
@@ -286,20 +296,20 @@ public:
 
 			return;
 		}
-		else if ((tmp->left == NULL) && (tmp->right == NULL)) {
+		else if (!tmp->left && !tmp->right) {
 
-			if (tmp->rightSon) {
-
-				tmp->father->right = NULL;
-				delete tmp;
-			}
-			else {
+			if (tmp->leftSon) {
 
 				tmp->father->left = NULL;
 				delete tmp;
 			}
+			else if (tmp->rightSon){
+
+				tmp->father->right = NULL;
+				delete tmp;
+			}
 		}
-		else if ((tmp->left != NULL) && (tmp->right == NULL)) {
+		else if (tmp->left && !tmp->right) {
 
 			if (tmp->leftSon) {
 
@@ -314,7 +324,7 @@ public:
 				delete tmp;
 			}
 		}
-		else if ((tmp->left == NULL) && (tmp->right != NULL)) {
+		else if (!tmp->left && tmp->right) {
 
 			if (tmp->leftSon) {
 
@@ -388,9 +398,13 @@ int main() {
 
 	tree.reverseLeftTraverseHeight(tree.root);
 
-	tree.directLeftTraversePathNode(tree.root);
+	// --------------------------------------------
 
-	tree.internalLeftTraverse(tree.root);
+	//tree.directLeftTraversePathNode(tree.root);
+
+	//tree.internalLeftTraverse(tree.root);
+
+	// --------------------------------------------
 
 	tree.directLeftTraversePrinting(fout, tree.root);
 
