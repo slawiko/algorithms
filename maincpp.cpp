@@ -51,8 +51,9 @@ class Tree {
 public:
 
 	Node* root = new Node();
-	int maxSumHeightSon = 0;
-	int i = 0;   //фигня
+	int maxLength = 0;
+	int place = 0;
+	int deletedNode = 0;
 
 	void addNode(int addWeight, Node* node) {
 
@@ -94,130 +95,16 @@ public:
 		}
 	}
 
-
-
-
-
-
-	void directLeftTraversePathNode(Node* node) {
+	void reverseLeftTraverseHeight(Node* node) {
 
 		if (node) {
 
-			if (!node->father && node->height >= maxSumHeightSon) {
-
-				node->halfPathRoot = true;
-				node->halfPathNode = true;
-
-				pathNode(node->left);
-				pathNode(node->right);
-			}
-
-			if (node->left && node->right) {
-
-				if (node->left->height + node->right->height == maxSumHeightSon) {
-
-					node->halfPathRoot = true;
-					node->halfPathNode = true;
-
-					pathNode(node->left);
-					pathNode(node->right);
-				}	
-			}
-			else if (!node->left && node->right) {
-
-				if (node->right->height == maxSumHeightSon) {
-
-					node->halfPathRoot = true;
-					node->halfPathNode = true;
-
-					pathNode(node->right);
-				}
-			}
-			else if (node->left && !node->right) {
-
-				if (node->left->height == maxSumHeightSon) {
-
-					node->halfPathRoot = true;
-					node->halfPathNode = true;
-
-					pathNode(node->left);
-				}
-			}
-
-			directLeftTraversePathNode(node->left);
-			directLeftTraversePathNode(node->right);
+			reverseLeftTraverseHeight(node->left);
+			reverseLeftTraverseHeight(node->right);
+			heightNode(node);
 		}
 	}
 
-	void pathNode(Node* node) {
-
-		if (node) {
-
-			node->halfPathNode = true;
-			
-			if (!node->left && !node->right) {
-
-				return;
-			}
-			else if (!node->left && node->right) {
-
-				pathNode(node->right);
-			}
-			else if (node->left && !node->right) {
-
-				pathNode(node->left);
-			}
-			else {
-
-				if (node->left->height > node->right->height) {
-
-					pathNode(node->left);
-				}
-				else if (node->left->height < node->right->height) {
-
-					pathNode(node->right);
-				}
-				else {
-
-					pathNode(node->left);
-					pathNode(node->right);
-				}
-			}
-		}
-	}
-
-	void internalLeftTraverse(Node* node) {
-
-		if (i < 2) {
-
-			if (node) {
-
-				internalLeftTraverse(node->left);
-				secondPlace(node);
-				internalLeftTraverse(node->right);
-			}
-		}
-	}
-
-	void secondPlace(Node* node) {
-
-		if (node->halfPathNode) {
-
-			i++;
-		}
-		if (i == 2) {
-
-			rightDelete(node->weight);
-			return;
-		}
-	}
-
-
-
-
-
-
-	
 	void heightNode(Node* node) {
 
 		if (node) {
@@ -230,27 +117,23 @@ public:
 
 				node->height = node->left->height + 1;
 
-				if (node->left->height > maxSumHeightSon) {
+				if (node->left->height + 1 > maxLength) {
 
-					maxSumHeightSon = node->left->height;
+					maxLength = node->left->height + 1;
 				}
 			}
 			else if (!node->left && node->right) {
 
 				node->height = node->right->height + 1;
 
-				if (node->right->height > maxSumHeightSon) {
+				if (node->right->height + 1> maxLength) {
 
-					maxSumHeightSon = node->right->height;
+					maxLength = node->right->height + 1;
 				}
 			}
 			else {
 
-				if (node->left->height > node->right->height) {
-
-					node->height = node->left->height + 1;
-				}
-				else if (node->left->height == node->right->height) {
+				if (node->left->height >= node->right->height) {
 
 					node->height = node->left->height + 1;
 				}
@@ -259,31 +142,206 @@ public:
 					node->height = node->right->height + 1;
 				}
 
-				if (node->left->height + node->right->height > maxSumHeightSon) {
+				if (node->left->height + node->right->height + 2 > maxLength) {
 
-					maxSumHeightSon = node->left->height + node->right->height;
+					maxLength = node->left->height + node->right->height + 2;
 				}
 			}
 		}
 	}
 
-	void reverseLeftTraverseHeight(Node* node) {
+	void directLeftTraversePathNode(Node* node) {
 
 		if (node) {
 
-			reverseLeftTraverseHeight(node->left);
-			reverseLeftTraverseHeight(node->right);
-			heightNode(node);
+			if (node->left && node->right) {
+
+				if (node->left->height + node->right->height + 2 == maxLength) {
+
+					node->halfPathRoot = true;
+					node->halfPathNode = true;
+				}
+				else if (node->father) {
+
+					if (node->father->halfPathRoot) {
+
+						node->halfPathNode = true;
+					}
+					else if (node->father->halfPathNode) {
+
+						if (node->father->left && node->father->right) {
+
+							if (node->father->left->height > node->father->right->height) {
+
+								node->father->left->halfPathNode = true;
+							}
+							else if (node->father->left->height < node->father->right->height) {
+
+								node->father->right->halfPathNode = true;
+							}
+							else {
+
+								node->father->left->halfPathNode = true;
+								node->father->right->halfPathNode = true;
+							}
+						}
+						else if (node->father->left) {
+
+							node->father->left->halfPathNode = true;
+						}
+						else if (node->father->right) {
+
+							node->father->right->halfPathNode = true;
+						}
+					}
+				}
+			}
+			else if (!node->left && node->right) {
+
+				if (node->right->height + 1 == maxLength) {
+
+					node->halfPathRoot = true;
+					node->halfPathNode = true;
+				}
+				else if (node->father) {
+
+					if (node->father->halfPathRoot) {
+
+						node->halfPathNode = true;
+					}
+					else if (node->father->halfPathNode) {
+
+						if (node->father->left && node->father->right) {
+
+							if (node->father->left->height > node->father->right->height) {
+
+								node->father->left->halfPathNode = true;
+							}
+							else if (node->father->left->height < node->father->right->height) {
+
+								node->father->right->halfPathNode = true;
+							}
+							else {
+
+								node->father->left->halfPathNode = true;
+								node->father->right->halfPathNode = true;
+							}
+						}
+						else if (node->father->left) {
+
+							node->father->left->halfPathNode = true;
+						}
+						else if (node->father->right) {
+
+							node->father->right->halfPathNode = true;
+						}
+					}
+				}
+			}
+			else if (node->left && !node->right) {
+
+				if (node->left->height + 1 == maxLength) {
+
+					node->halfPathRoot = true;
+					node->halfPathNode = true;
+				}
+				else if (node->father) {
+
+					if (node->father->halfPathRoot) {
+
+						node->halfPathNode = true;
+					}
+					else if (node->father->halfPathNode) {
+
+						if (node->father->left && node->father->right) {
+
+							if (node->father->left->height > node->father->right->height) {
+
+								node->father->left->halfPathNode = true;
+							}
+							else if (node->father->left->height < node->father->right->height) {
+
+								node->father->right->halfPathNode = true;
+							}
+							else {
+
+								node->father->left->halfPathNode = true;
+								node->father->right->halfPathNode = true;
+							}
+						}
+						else if (node->father->left) {
+
+							node->father->left->halfPathNode = true;
+						}
+						else if (node->father->right) {
+
+							node->father->right->halfPathNode = true;
+						}
+					}
+				}
+			}
+			else {
+
+				if (node->father) {
+
+					if (node->father->halfPathRoot) {
+
+						node->halfPathNode = true;
+					}
+					else if (node->father->halfPathNode) {
+
+						if (node->father->left && node->father->right) {
+
+							if (node->father->left->height > node->father->right->height) {
+
+								node->father->left->halfPathNode = true;
+							}
+							else if (node->father->left->height < node->father->right->height) {
+
+								node->father->right->halfPathNode = true;
+							}
+							else {
+
+								node->father->left->halfPathNode = true;
+								node->father->right->halfPathNode = true;
+							}
+						}
+						else if (node->father->left) {
+
+							node->father->left->halfPathNode = true;
+						}
+						else if (node->father->right) {
+
+							node->father->right->halfPathNode = true;
+						}
+					}
+				}
+			}
+
+			directLeftTraversePathNode(node->left);
+			directLeftTraversePathNode(node->right);
 		}
 	}
 
-	void directLeftTraversePrinting(ofstream& out, Node* node) {
+	void internalLeftTraverse(Node* node) {
 
-		if (node) {
+		if (place < 2) {
 
-			out << node->weight << endl;
-			directLeftTraversePrinting(out, node->left);
-			directLeftTraversePrinting(out, node->right);
+			if (node) {
+
+				internalLeftTraverse(node->left);
+
+				if (node->halfPathNode) {
+
+					place++;
+				}
+				if (place == 2) {
+
+					deletedNode = node->weight;
+				}
+
+				internalLeftTraverse(node->right);
+			}
 		}
 	}
 
@@ -348,18 +406,6 @@ public:
 		}
 	}
 
-	Node*& findLeft(Node* node){
-
-		if (node->left != NULL) {
-
-			return findLeft(node->left);
-		}
-		else {
-
-			return node;
-		}
-	}
-
 	Node*& findNode(int findWeight, Node* node) {
 
 		if (node == NULL) {
@@ -377,6 +423,28 @@ public:
 		else {
 
 			return findNode(findWeight, node->right);
+		}
+	}
+
+	Node*& findLeft(Node* node){
+
+		if (node->left != NULL) {
+
+			return findLeft(node->left);
+		}
+		else {
+
+			return node;
+		}
+	}
+
+	void directLeftTraversePrinting(ofstream& out, Node* node) {
+
+		if (node) {
+
+			out << node->weight << endl;
+			directLeftTraversePrinting(out, node->left);
+			directLeftTraversePrinting(out, node->right);
 		}
 	}
 };
@@ -397,15 +465,9 @@ int main() {
 	}
 
 	tree.reverseLeftTraverseHeight(tree.root);
-
-	// --------------------------------------------
-
-	//tree.directLeftTraversePathNode(tree.root);
-
-	//tree.internalLeftTraverse(tree.root);
-
-	// --------------------------------------------
-
+	tree.directLeftTraversePathNode(tree.root);
+	tree.internalLeftTraverse(tree.root);
+	tree.rightDelete(tree.deletedNode);
 	tree.directLeftTraversePrinting(fout, tree.root);
 
 	fin.close();
