@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-//#pragma comment(linker, "/STACK:16777216")
 
 using namespace std;
 
@@ -439,6 +438,18 @@ public:
 	}
 
 	void directLeftTraversePrinting(ofstream& out, Node* node) {
+
+		/*out << node->weight;
+		if (node->left) {
+
+			out << endl;
+			directLeftTraversePrinting(out, node->left);
+		}
+		if (node->right) {
+
+			out << endl;
+			directLeftTraversePrinting(out, node->right);
+		}*/
 
 		if (node) {
 
