@@ -405,7 +405,7 @@ public:
 		}
 	}
 
-	Node*& findNode(int findWeight, Node* node) {
+	Node*& findNode(int findWeight, Node*& node) {
 
 		if (node == NULL) {
 
@@ -425,7 +425,7 @@ public:
 		}
 	}
 
-	Node*& findLeft(Node* node){
+	Node*& findLeft(Node*& node){
 
 		if (node->left != NULL) {
 
@@ -438,18 +438,6 @@ public:
 	}
 
 	void directLeftTraversePrinting(ofstream& out, Node* node) {
-
-		/*out << node->weight;
-		if (node->left) {
-
-			out << endl;
-			directLeftTraversePrinting(out, node->left);
-		}
-		if (node->right) {
-
-			out << endl;
-			directLeftTraversePrinting(out, node->right);
-		}*/
 
 		if (node) {
 
