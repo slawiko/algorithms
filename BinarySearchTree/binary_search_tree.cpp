@@ -457,9 +457,8 @@ int main() {
 
 	int tmp = 0;
 
-	while (!fin.eof()) {
+	while (fin >> tmp) {
 
-		fin >> tmp;
 		tree.addNode(tmp, tree.root);
 	}
 
