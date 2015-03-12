@@ -51,5 +51,6 @@ int main() {
 		wards[i] = HospitalWard(n, a, b);
 	}
 
+	delete []wards;
 	return 0;
 }
