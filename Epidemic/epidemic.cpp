@@ -70,6 +70,18 @@ public:
 			}
 		}
 	}
+
+	bool isSatisfied() {
+
+		if (bedsForA >= A && bedsForB >= B) {
+
+			return true;
+		}
+		else {
+
+			return false;
+		}
+	}
 };
 
 
@@ -101,6 +113,7 @@ int main() {
 	}
 
 	epidemic.videWards();
+	epidemic.isSatisfied();
 
 
 
