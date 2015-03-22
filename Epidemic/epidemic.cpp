@@ -45,6 +45,8 @@ public:
 	int P; //number of hospital wards
 	HospitalWard *wards;
 
+	int *;
+
 	int bedsForA; //number of free beds for patientsA
 	int bedsForB; //number of free beds for patientsB
 
@@ -109,6 +111,13 @@ public:
 
 		return bedsInFreeWards;
 	}
+
+	void capcitySet(int bedsInFreeWards) { // numbering of array starts on 1
+
+		int *S = new int[bedsInFreeWards + 1];
+
+
+	}
 };
 
 
@@ -148,6 +157,7 @@ int main() {
 	}
 
 	bedsInFreeWards = epidemic.videWards();
+	epidemic.capcitySet(bedsInFreeWards);
 
 
 
