@@ -1,4 +1,4 @@
-﻿//В связи с эпидемией гриппа в больницу направляется А больных гриппом "А" и В больных гриппом "В".Больных гриппом "А" нельзя помещать в одну палату с больными гриппом "В".Имеется информация об 
+﻿//---В связи с эпидемией гриппа в больницу направляется А больных гриппом "А" и В больных гриппом "В".Больных гриппом "А" нельзя помещать в одну палату с больными гриппом "В".Имеется информация об 
 //общем количестве палат P в больнице, пронумерованных от 1 до P, и о распределении уже имеющихся там больных.
 //Необходимо определить максимальное количество больных M, которое больница в состоянии принять.При размещении новых больных не разрешается переселять уже имеющихся больных из палаты в палату.
 //---Входные данные находятся в текстовом файле с именем input.txt  и имеют следующую структуру :
@@ -36,48 +36,42 @@ struct HospitalWard{
 	}
 };
 
-struct Patients {
+class Epidemic {
 
-	int A;
-	int B;
+public:
 
-	Patients() {
+	int A; //number of patients A
+	int B; //number of patients B
+	int P; //number of hospital wards
+	HospitalWard *wards;
 
-		this->A = 0;
-		this->B = 0;
-	}
+	int bedsForA; //number of free beds for patientsA
+	int bedsForB; //number of free beds for patientsB
 
-	Patients(int A, int B) {
+	Epidemic(int A, int B, int P) {
 
 		this->A = A;
 		this->B = B;
+		this->P = P;
+		this->wards = new HospitalWard[this->P];
+	}
+
+	void videWards() {
+
+		for (int i = 0; i < P; i++) {
+
+			if (wards[i].patientsA != 0) {
+
+				bedsForA += wards[i].beds - wards[i].patientsA;
+			}
+			else if (wards[i].patientsB != 0) {
+
+				bedsForB += wards[i].beds - wards[i].patientsB;
+			}
+		}
 	}
 };
 
-void remainingPatients(Patients patients) {
-
-
-}
-
-void videWards(HospitalWard* wards, int P, Patients patients) {
-
-	int bedsForA = 0;
-	int bedsForB = 0;
-
-	for (int i = 0; i < P; i++) {
-
-		if (wards[i].patientsA != 0) {
-
-			bedsForA += wards[i].beds - wards[i].patientsA;
-		}
-		else if (wards[i].patientsB != 0) {
-
-			bedsForB += wards[i].beds - wards[i].patientsB;
-		}
-	}
-
-	return;
-}
 
 int main() {
 
@@ -95,8 +89,7 @@ int main() {
 	fin >> B;
 	fin >> P;
 
-	HospitalWard *wards = new HospitalWard[P];
-	Patients patients(A, B);
+	Epidemic epidemic(A, B, P);
 
 	for (int i = 0; i < P; i++) {
 
@@ -104,11 +97,14 @@ int main() {
 		fin >> a;
 		fin >> b;
 
-		wards[i] = HospitalWard(n, a, b);
+		epidemic.wards[i] = HospitalWard(n, a, b);
 	}
 
-	videWards(wards, P, patients);
+	epidemic.videWards();
 
-	delete []wards;
+
+
+
+
 	return 0;
 }
