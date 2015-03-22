@@ -4,7 +4,7 @@
 //---Входные данные находятся в текстовом файле с именем input.txt  и имеют следующую структуру :
 //•	в первой строке находится целое число A(0≤A≤100);
 //•	во второй строке – целое число B(0≤B≤100);
-//•	 в третьей строке – натуральное число P(P≤20);
+//•	в третьей строке – натуральное число P(P≤20);
 //•	в каждой из последующих P строк находятся 3 числа n, a, b, разделенных пробелом, где n - вместимость палаты, a - количество уже имеющихся в палате больных гриппом "А", b - количество уже 
 //имеющихся в палате больных гриппом "В".Информация о вместимости палат вводится последовательно для палат с номерами 1, 2, ..., P.Числа n, a, b - целые неотрицательные, меньшие 100.
 //---Выходные данные должны быть записаны в текстовый файл с именем output.txt и иметь следующий формат :
@@ -56,7 +56,7 @@ public:
 		this->wards = new HospitalWard[this->P];
 	}
 
-	void videWards() {
+	void busyWards() {
 
 		for (int i = 0; i < P; i++) {
 
@@ -71,9 +71,9 @@ public:
 		}
 	}
 
-	bool isSatisfied() {
+	bool isSatisfiedA() {
 
-		if (bedsForA >= A && bedsForB >= B) {
+		if (bedsForA >= A) {
 
 			return true;
 		}
@@ -81,6 +81,33 @@ public:
 
 			return false;
 		}
+	}
+
+	bool isSatisfiedB() {
+
+		if (bedsForB >= B) {
+
+			return true;
+		}
+		else {
+
+			return false;
+		}
+	}
+
+	int videWards() {
+
+		int bedsInFreeWards = 0;
+
+		for (int i = 0; i < P; i++) {
+
+			if (wards[i].patientsA == 0 && wards[i].patientsB == 0) {
+
+				bedsInFreeWards += wards[i].beds;
+			}
+		}
+
+		return bedsInFreeWards;
 	}
 };
 
@@ -96,6 +123,7 @@ int main() {
 	int n = 0; //number of beds
 	int a = 0; //number of patients A in a hospital ward
 	int b = 0; //number of patients B in a hospital ward
+	int bedsInFreeWards = 0;
 
 	fin >> A;
 	fin >> B;
@@ -112,8 +140,14 @@ int main() {
 		epidemic.wards[i] = HospitalWard(n, a, b);
 	}
 
-	epidemic.videWards();
-	epidemic.isSatisfied();
+	epidemic.busyWards();
+
+	if (epidemic.isSatisfiedA() && epidemic.isSatisfiedB()) {
+
+		return 0;
+	}
+
+	bedsInFreeWards = epidemic.videWards();
 
 
 
