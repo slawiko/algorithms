@@ -45,7 +45,7 @@ public:
 	int P; //number of hospital wards
 	HospitalWard *wards;
 
-	int *;
+	int *wardBeds;
 
 	int bedsForA; //number of free beds for patientsA
 	int bedsForB; //number of free beds for patientsB
@@ -56,6 +56,11 @@ public:
 		this->B = B;
 		this->P = P;
 		this->wards = new HospitalWard[this->P];
+
+		this->wardBeds = new int[this->P];
+
+		this->bedsForA = 0;
+		this->bedsForB = 0;
 	}
 
 	void busyWards() {
@@ -147,6 +152,7 @@ int main() {
 		fin >> b;
 
 		epidemic.wards[i] = HospitalWard(n, a, b);
+		epidemic.wardBeds[i] = n;
 	}
 
 	epidemic.busyWards();
