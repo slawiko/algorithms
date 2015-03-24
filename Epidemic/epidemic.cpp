@@ -122,7 +122,28 @@ public:
 
 		int *S = new int[bedsInFreeWards + 1];
 
+		for (int i = 0; i < bedsInFreeWards + 1; i++) {
 
+			S[i] = 0; // slow 
+		}
+
+		int latestOne = 0;
+
+		for (int i = 0; i < P; i++) { //лажа
+
+			S[videWards[i].beds] = 1;
+
+			latestOne += videWards[i].beds;
+
+			for (int j = latestOne - 1; j > 0; j--) {
+
+				if (S[j] == 1) {
+
+					S[j + videWards[i].beds] = 1;
+					latestOne = j + videWards[i].beds;
+				}
+			}
+		}
 	}
 };
 
