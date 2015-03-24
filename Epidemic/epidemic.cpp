@@ -12,6 +12,7 @@
 //•	если все поступившие больные размещены, то во второй строке должны находиться номера палат, разделенные пробелом, куда помещаются больные гриппом "А" (в порядке возрастания).
 
 #include <fstream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -36,6 +37,14 @@ struct HospitalWard{
 	}
 };
 
+int compare(const void* ward1, const void* ward2) {
+
+	const HospitalWard* ward11 = (HospitalWard*)ward1;
+	const HospitalWard* ward22 = (HospitalWard*)ward2;
+
+	return ward11->beds < ward22->beds ? -1 : ward11->beds > ward22->beds ? 1 : 0;;
+}
+
 class Epidemic {
 
 public:
@@ -44,8 +53,6 @@ public:
 	int B; //number of patients B
 	int P; //number of hospital wards
 	HospitalWard *wards;
-
-	int *wardBeds;
 
 	int bedsForA; //number of free beds for patientsA
 	int bedsForB; //number of free beds for patientsB
@@ -57,13 +64,13 @@ public:
 		this->P = P;
 		this->wards = new HospitalWard[this->P];
 
-		this->wardBeds = new int[this->P];
-
 		this->bedsForA = 0;
 		this->bedsForB = 0;
 	}
 
 	void busyWards() {
+
+		qsort(wards, P, sizeof(HospitalWard), compare);
 
 		for (int i = 0; i < P; i++) {
 
@@ -105,6 +112,7 @@ public:
 	int videWards() {
 
 		int bedsInFreeWards = 0;
+		int j = 0;
 
 		for (int i = 0; i < P; i++) {
 
@@ -117,14 +125,13 @@ public:
 		return bedsInFreeWards;
 	}
 
-	void capcitySet(int bedsInFreeWards) { // numbering of array starts on 1
+	void capacitySet(int bedsInFreeWards) { // numbering of array starts on 1
 
 		int *S = new int[bedsInFreeWards + 1];
 
 
 	}
 };
-
 
 int main() {
 
@@ -152,7 +159,6 @@ int main() {
 		fin >> b;
 
 		epidemic.wards[i] = HospitalWard(n, a, b);
-		epidemic.wardBeds[i] = n;
 	}
 
 	epidemic.busyWards();
@@ -163,7 +169,7 @@ int main() {
 	}
 
 	bedsInFreeWards = epidemic.videWards();
-	epidemic.capcitySet(bedsInFreeWards);
+	epidemic.capacitySet(bedsInFreeWards);
 
 
 
