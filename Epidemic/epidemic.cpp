@@ -37,14 +37,6 @@ struct HospitalWard{
 	}
 };
 
-int compare(const void* ward1, const void* ward2) {
-
-	const HospitalWard* ward11 = (HospitalWard*)ward1;
-	const HospitalWard* ward22 = (HospitalWard*)ward2;
-
-	return ward11->beds < ward22->beds ? -1 : ward11->beds > ward22->beds ? 1 : 0;;
-}
-
 class Epidemic {
 
 public:
@@ -53,6 +45,7 @@ public:
 	int B; //number of patients B
 	int P; //number of hospital wards
 	HospitalWard *wards;
+	HospitalWard *videWards;
 
 	int bedsForA; //number of free beds for patientsA
 	int bedsForB; //number of free beds for patientsB
@@ -63,14 +56,13 @@ public:
 		this->B = B;
 		this->P = P;
 		this->wards = new HospitalWard[this->P];
+		this->videWards = new HospitalWard[this->P];
 
 		this->bedsForA = 0;
 		this->bedsForB = 0;
 	}
 
 	void busyWards() {
-
-		qsort(wards, P, sizeof(HospitalWard), compare);
 
 		for (int i = 0; i < P; i++) {
 
@@ -109,7 +101,7 @@ public:
 		}
 	}
 
-	int videWards() {
+	int videWard() {
 
 		int bedsInFreeWards = 0;
 		int j = 0;
@@ -119,6 +111,7 @@ public:
 			if (wards[i].patientsA == 0 && wards[i].patientsB == 0) {
 
 				bedsInFreeWards += wards[i].beds;
+				videWards[j++] = wards[i];
 			}
 		}
 
@@ -132,6 +125,14 @@ public:
 
 	}
 };
+
+int compare(const void* ward1, const void* ward2) {
+
+	const HospitalWard* ward11 = (HospitalWard*)ward1;
+	const HospitalWard* ward22 = (HospitalWard*)ward2;
+
+	return ward11->beds < ward22->beds ? -1 : ward11->beds > ward22->beds ? 1 : 0;;
+}
 
 int main() {
 
@@ -161,6 +162,8 @@ int main() {
 		epidemic.wards[i] = HospitalWard(n, a, b);
 	}
 
+	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compare);
+
 	epidemic.busyWards();
 
 	if (epidemic.isSatisfiedA() && epidemic.isSatisfiedB()) {
@@ -168,7 +171,7 @@ int main() {
 		return 0;
 	}
 
-	bedsInFreeWards = epidemic.videWards();
+	bedsInFreeWards = epidemic.videWard();
 	epidemic.capacitySet(bedsInFreeWards);
 
 
