@@ -118,9 +118,9 @@ public:
 		return bedsInFreeWards;
 	}
 
-	void capacitySet(int bedsInFreeWards) { // numbering of array starts on 1
+	void capacitySet(int bedsInFreeWards) {
 
-		int *S = new int[bedsInFreeWards + 1];
+		int *S = new int[bedsInFreeWards + 1]; // numbering of array starts on 1
 
 		for (int i = 0; i < bedsInFreeWards + 1; i++) {
 
@@ -144,6 +144,10 @@ public:
 				}
 			}
 		}
+
+		//--------------------------------------------------------------------------
+
+
 	}
 };
 
