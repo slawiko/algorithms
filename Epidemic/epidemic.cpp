@@ -21,19 +21,22 @@ struct HospitalWard{
 	int beds;
 	int patientsA;
 	int patientsB;
+	int number;
 
 	HospitalWard() {
 
 		this->beds = 0;
 		this->patientsA = 0;
 		this->patientsB = 0;
+		this->number = 0;
 	}
 
-	HospitalWard(int beds, int patientsA, int patientsB) {
+	HospitalWard(int beds, int patientsA, int patientsB, int number) {
 
 		this->beds = beds;
 		this->patientsA = patientsA;
 		this->patientsB = patientsB;
+		this->number = number;
 	}
 };
 
@@ -58,8 +61,8 @@ public:
 	int bedsForA; //number of free beds for patientsA
 	int bedsForB; //number of free beds for patientsB
 
-	int satisfiedA;
-	int satisfiedB;
+	int newA; //number of patients A after nonVideWards
+	int newB; //number of patients B after nonVideWards
 
 	Epidemic(int A, int B, int P) {
 
@@ -72,8 +75,8 @@ public:
 		this->bedsForA = 0;
 		this->bedsForB = 0;
 
-		this->satisfiedA = 0;
-		this->satisfiedB = 0;
+		this->newA = 0;
+		this->newB = 0;
 	}
 
 	void nonVideWards() {
@@ -132,14 +135,11 @@ public:
 		return bedsInFreeWards;
 	}
 
-	void capacitySet(int bedsInFreeWards) {
-
-		if (isSatisfiedA() && isSatisfiedB()) {
-
-			return;
-		}
+	int fullOccupansy(int bedsInFreeWards, int newA, int newB) {
 
 		int *S = new int[bedsInFreeWards + 1]; // numbering of array starts on 1
+
+		int firstRightOne = 0;
 
 		for (int i = 0; i < bedsInFreeWards + 1; i++) {
 
@@ -164,11 +164,43 @@ public:
 				}
 			}
 		}
+
+		for (int i = newA; i < bedsInFreeWards + 1; i++) {
+
+			if (S[i] == 1) {
+
+				firstRightOne = i;
+				break;
+			}
+		}
+
+		if (firstRightOne == 0) {
+
+			//call a function that will calculate partial occupancy
+		}
+		else if (newB <= bedsInFreeWards - firstRightOne) {
+
+			return A + B;
+		}
+		else {
+
+			//call a function that will calculate partial occupancy
+		}
+
+
+
+		return 0;
+	}
+
+	int partialOssupancy() {
+
+		return 0;
 	}
 
 	int task() {
 
 		int bedsInFreeWards = 0;
+		int M = 0;
 
 		nonVideWards();
 
@@ -178,13 +210,18 @@ public:
 		}
 		else {
 
+			newA = A - bedsForA;
+			newB = B - bedsForB;
+
 			qsort(wards, P, sizeof(HospitalWard), compare); // I must create new array
 
 			bedsInFreeWards = videWard();
-			capacitySet(bedsInFreeWards);
+			M = fullOccupansy(bedsInFreeWards, newA, newB);
 
 
-			return 0;
+
+
+			return M;
 		}
 	}
 };
@@ -214,7 +251,7 @@ int main() {
 		fin >> a;
 		fin >> b;
 
-		epidemic.wards[i] = HospitalWard(n, a, b);
+		epidemic.wards[i] = HospitalWard(n, a, b, i);
 	}
 
 	M = epidemic.task();
@@ -223,3 +260,12 @@ int main() {
 
 	return 0;
 }
+
+
+
+
+
+
+/*
+доделать частичное размещение сука заебало
+*/
