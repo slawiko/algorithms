@@ -124,28 +124,27 @@ public:
 
 		for (int i = 0; i < bedsInFreeWards + 1; i++) {
 
-			S[i] = 0; // slow 
+			S[i] = 0;
 		}
 
 		int latestOne = 0;
 
-		for (int i = 0; i < P; i++) { //лажа
+		for (int i = 0; i < P; i++) {
 
 			S[videWards[i].beds] = 1;
 
 			latestOne += videWards[i].beds;
 
-			for (int j = latestOne - 1; j > 0; j--) {
+			S[latestOne] = 1;
+
+			for (int j = videWards[i].beds - 1; j > 0; j--) {
 
 				if (S[j] == 1) {
 
 					S[j + videWards[i].beds] = 1;
-					latestOne = j + videWards[i].beds;
 				}
 			}
 		}
-
-		//--------------------------------------------------------------------------
 
 
 	}
