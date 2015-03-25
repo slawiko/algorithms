@@ -37,6 +37,14 @@ struct HospitalWard{
 	}
 };
 
+int compare(const void* ward1, const void* ward2) {
+
+	const HospitalWard* ward11 = (HospitalWard*)ward1;
+	const HospitalWard* ward22 = (HospitalWard*)ward2;
+
+	return ward11->beds < ward22->beds ? -1 : ward11->beds > ward22->beds ? 1 : 0;;
+}
+
 class Epidemic {
 
 public:
@@ -50,6 +58,9 @@ public:
 	int bedsForA; //number of free beds for patientsA
 	int bedsForB; //number of free beds for patientsB
 
+	int satisfiedA;
+	int satisfiedB;
+
 	Epidemic(int A, int B, int P) {
 
 		this->A = A;
@@ -60,9 +71,12 @@ public:
 
 		this->bedsForA = 0;
 		this->bedsForB = 0;
+
+		this->satisfiedA = 0;
+		this->satisfiedB = 0;
 	}
 
-	void busyWards() {
+	void nonVideWards() {
 
 		for (int i = 0; i < P; i++) {
 
@@ -120,6 +134,11 @@ public:
 
 	void capacitySet(int bedsInFreeWards) {
 
+		if (isSatisfiedA() && isSatisfiedB()) {
+
+			return;
+		}
+
 		int *S = new int[bedsInFreeWards + 1]; // numbering of array starts on 1
 
 		for (int i = 0; i < bedsInFreeWards + 1; i++) {
@@ -145,18 +164,30 @@ public:
 				}
 			}
 		}
+	}
+
+	int task() {
+
+		int bedsInFreeWards = 0;
+
+		nonVideWards();
+
+		if (isSatisfiedA() && isSatisfiedB()) {
+
+			return A + B;
+		}
+		else {
+
+			qsort(wards, P, sizeof(HospitalWard), compare); // I must create new array
+
+			bedsInFreeWards = videWard();
+			capacitySet(bedsInFreeWards);
 
 
+			return 0;
+		}
 	}
 };
-
-int compare(const void* ward1, const void* ward2) {
-
-	const HospitalWard* ward11 = (HospitalWard*)ward1;
-	const HospitalWard* ward22 = (HospitalWard*)ward2;
-
-	return ward11->beds < ward22->beds ? -1 : ward11->beds > ward22->beds ? 1 : 0;;
-}
 
 int main() {
 
@@ -169,7 +200,7 @@ int main() {
 	int n = 0; //number of beds
 	int a = 0; //number of patients A in a hospital ward
 	int b = 0; //number of patients B in a hospital ward
-	int bedsInFreeWards = 0;
+	int M = 0;
 
 	fin >> A;
 	fin >> B;
@@ -186,21 +217,9 @@ int main() {
 		epidemic.wards[i] = HospitalWard(n, a, b);
 	}
 
-	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compare);
+	M = epidemic.task();
 
-	epidemic.busyWards();
-
-	if (epidemic.isSatisfiedA() && epidemic.isSatisfiedB()) {
-
-		return 0;
-	}
-
-	bedsInFreeWards = epidemic.videWard();
-	epidemic.capacitySet(bedsInFreeWards);
-
-
-
-
+	fout << M;
 
 	return 0;
 }
