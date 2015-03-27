@@ -16,26 +16,41 @@
 
 using namespace std;
 
-struct HospitalWard{
+struct Patients {
 
-	int beds;
 	int patientsA;
 	int patientsB;
+
+	Patients() {
+
+		this->patientsA = 0;
+		this->patientsB = 0;
+	}
+
+	Patients(int patientsA, int patientsB) {
+
+		this->patientsA = patientsA;
+		this->patientsB = patientsB;
+	}
+};
+
+struct HospitalWard {
+
+	Patients patients;
+	int beds;
 	int number;
 
 	HospitalWard() {
 
+		this->patients = Patients();
 		this->beds = 0;
-		this->patientsA = 0;
-		this->patientsB = 0;
 		this->number = 0;
 	}
 
 	HospitalWard(int beds, int patientsA, int patientsB, int number) {
 
+		this->patients = Patients(patientsA, patientsB);
 		this->beds = beds;
-		this->patientsA = patientsA;
-		this->patientsB = patientsB;
 		this->number = number;
 	}
 };
@@ -83,13 +98,13 @@ public:
 
 		for (int i = 0; i < P; i++) {
 
-			if (wards[i].patientsA != 0) {
+			if (wards[i].patients.patientsA != 0) {
 
-				bedsForA += wards[i].beds - wards[i].patientsA;
+				bedsForA += wards[i].beds - wards[i].patients.patientsA;
 			}
-			else if (wards[i].patientsB != 0) {
+			else if (wards[i].patients.patientsB != 0) {
 
-				bedsForB += wards[i].beds - wards[i].patientsB;
+				bedsForB += wards[i].beds - wards[i].patients.patientsB;
 			}
 		}
 	}
@@ -125,7 +140,7 @@ public:
 
 		for (int i = 0; i < P; i++) {
 
-			if (wards[i].patientsA == 0 && wards[i].patientsB == 0) {
+			if (wards[i].patients.patientsA == 0 && wards[i].patients.patientsB == 0) {
 
 				bedsInFreeWards += wards[i].beds;
 				videWards[j++] = wards[i];
@@ -267,5 +282,17 @@ int main() {
 
 
 /*
+-------! переработать рассмотрение уже "слегка" наполненных палат (создать отдельные поля для подсчета !!размещенных!! больных каждым гриппом (возможно даже отдельные функции))
+-------! в функции task написать вызовы функций (п.1) и проверку на размещение всех больных в палаты из п.1. Если размещаются - return структурку больных и номера палат для больных А (optionally).
+			Если не размещаются - вызывать функцию подсчета для пустых палат.
+-------! в функции для пустых палат (videWards)
+
+
 доделать частичное размещение сука заебало
+
+
+
+
+
+
 */
