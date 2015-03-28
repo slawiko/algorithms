@@ -13,6 +13,7 @@
 
 #include <fstream>
 #include <cstdlib>
+#include <vector>
 
 using namespace std;
 
@@ -75,6 +76,16 @@ struct HospitalWard {
 	}
 };
 
+struct Element {
+
+	vector<int> ancestry;
+	int index;
+
+	Element() {
+
+		this->index = 0;
+	}
+};
 int compareCapacity(const void* ward1, const void* ward2) {
 
 	const HospitalWard* ward11 = (HospitalWard*)ward1;
@@ -151,30 +162,51 @@ public:
 		}
 	}
 
+	void videWard() {
+
+		int bedsInFreeWards = 0;
+		int j = 0;
+
+		for (int i = 0; i < P; i++) {
+
+			if (wards[i].patients.patientsA == 0 && wards[i].patients.patientsB == 0) {
+
+				bedsInFreeWards += wards[i].beds;
+				videWards[j++] = wards[i];
+			}
+		}
+
+		fullOccupansy(bedsInFreeWards);
+	}
+
+
 	int fullOccupansy(int bedsInFreeWards) {
 
-		int *S = new int[bedsInFreeWards + 1]; // numbering of array starts on 1
+		Element *S = new Element[bedsInFreeWards + 1]; // numbering of array starts on 1
 
 		for (int i = 0; i < bedsInFreeWards + 1; i++) {
 
-			S[i] = 0;
+			S[i].ancestry.reserve(P);
 		}
 
 		int latestOne = 0;
 
 		for (int i = 0; i < P; i++) {
 
-			S[videWards[i].beds] = 1;
+			S[videWards[i].beds].index = 1;
+			S[videWards[i].beds].ancestry.push_back(videWards[i].number);
 
 			latestOne += videWards[i].beds;
 
-			S[latestOne] = 1;
+			S[latestOne].index = 1;
+			S[latestOne].ancestry.push_back(videWards[i].number);
 
 			for (int j = videWards[i].beds - 1; j > 0; j--) {
 
-				if (S[j] == 1) {
+				if (S[j].index == 1) {
 
-					S[j + videWards[i].beds] = 1;
+					S[j + videWards[i].beds].index = 1;
+					S[j + videWards[i].beds].ancestry.push_back(j);
 				}
 			}
 		}
@@ -185,7 +217,7 @@ public:
 
 		for (int i = currentPatients.patientsA; i < bedsInFreeWards + 1; i++) {
 
-			if (S[i] == 1) {
+			if (S[i].index == 1) {
 
 				firstRightOne = i;
 				break;
@@ -208,23 +240,6 @@ public:
 
 
 		return 0;
-	}
-
-	void videWard() {
-
-		int bedsInFreeWards = 0;
-		int j = 0;
-
-		for (int i = 0; i < P; i++) {
-
-			if (wards[i].patients.patientsA == 0 && wards[i].patients.patientsB == 0) {
-
-				bedsInFreeWards += wards[i].beds;
-				videWards[j++] = wards[i];
-			}
-		}
-
-		fullOccupansy(bedsInFreeWards);
 	}
 
 	int partialOssupancy() {
