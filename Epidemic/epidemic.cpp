@@ -32,6 +32,26 @@ struct Patients {
 		this->patientsA = patientsA;
 		this->patientsB = patientsB;
 	}
+
+	Patients operator+(const Patients patients) {
+
+		Patients result;
+
+		result.patientsA = this->patientsA + patients.patientsA;
+		result.patientsB = this->patientsB + patients.patientsB;
+
+		return result;
+	}
+
+	Patients operator-(const Patients patients) {
+
+		Patients result;
+
+		result.patientsA = this->patientsA - patients.patientsA;
+		result.patientsB = this->patientsB - patients.patientsB;
+
+		return result;
+	}
 };
 
 struct HospitalWard {
@@ -55,7 +75,7 @@ struct HospitalWard {
 	}
 };
 
-int compare(const void* ward1, const void* ward2) {
+int compareCapacity(const void* ward1, const void* ward2) {
 
 	const HospitalWard* ward11 = (HospitalWard*)ward1;
 	const HospitalWard* ward22 = (HospitalWard*)ward2;
@@ -67,31 +87,18 @@ class Epidemic {
 
 public:
 
-	int A; //number of patients A
-	int B; //number of patients B
+	Patients patients;
 	int P; //number of hospital wards
 	HospitalWard *wards;
 	HospitalWard *videWards;
 
-	int bedsForA; //number of free beds for patientsA
-	int bedsForB; //number of free beds for patientsB
-
-	int newA; //number of patients A after nonVideWards
-	int newB; //number of patients B after nonVideWards
-
 	Epidemic(int A, int B, int P) {
 
-		this->A = A;
-		this->B = B;
+		this->patients.patientsA = A;
+		this->patients.patientsB = B;
 		this->P = P;
 		this->wards = new HospitalWard[this->P];
 		this->videWards = new HospitalWard[this->P];
-
-		this->bedsForA = 0;
-		this->bedsForB = 0;
-
-		this->newA = 0;
-		this->newB = 0;
 	}
 
 	void nonVideWards() {
@@ -100,36 +107,17 @@ public:
 
 			if (wards[i].patients.patientsA != 0) {
 
-				bedsForA += wards[i].beds - wards[i].patients.patientsA;
+				patients.patientsA -= wards[i].beds - wards[i].patients.patientsA; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! if
+
+				if (patients.patientsA >= 0) {
+
+					wards[i].patients.patientsA
+				}
 			}
 			else if (wards[i].patients.patientsB != 0) {
 
-				bedsForB += wards[i].beds - wards[i].patients.patientsB;
+				patients.patientsB += wards[i].beds - wards[i].patients.patientsB;
 			}
-		}
-	}
-
-	bool isSatisfiedA() {
-
-		if (bedsForA >= A) {
-
-			return true;
-		}
-		else {
-
-			return false;
-		}
-	}
-
-	bool isSatisfiedB() {
-
-		if (bedsForB >= B) {
-
-			return true;
-		}
-		else {
-
-			return false;
 		}
 	}
 
@@ -195,7 +183,7 @@ public:
 		}
 		else if (newB <= bedsInFreeWards - firstRightOne) {
 
-			return A + B;
+			return patients.patientsA + patients.patientsB;
 		}
 		else {
 
@@ -217,27 +205,24 @@ public:
 		int bedsInFreeWards = 0;
 		int M = 0;
 
-		nonVideWards();
+		Patients patientsInNonVideWards;
 
-		if (isSatisfiedA() && isSatisfiedB()) {
+		patientsInNonVideWards = nonVideWards();
 
-			return A + B;
+		if (patientsInNonVideWards.patientsA >= patients.patientsA && patientsInNonVideWards.patientsA >= patients.patientsA) {
+
+
 		}
-		else {
 
-			newA = A - bedsForA;
-			newB = B - bedsForB;
+		qsort(wards, P, sizeof(HospitalWard), compareCapacity); // I must create new array
 
-			qsort(wards, P, sizeof(HospitalWard), compare); // I must create new array
-
-			bedsInFreeWards = videWard();
-			M = fullOccupansy(bedsInFreeWards, newA, newB);
+		bedsInFreeWards = videWard();
+		M = fullOccupansy(bedsInFreeWards, newA, newB);
 
 
 
 
-			return M;
-		}
+		return M;	
 	}
 };
 
@@ -289,10 +274,6 @@ int main() {
 
 
 доделать частичное размещение сука заебало
-
-
-
-
 
 
 */
