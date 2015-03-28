@@ -107,16 +107,29 @@ public:
 
 			if (wards[i].patients.patientsA != 0) {
 
-				patients.patientsA -= wards[i].beds - wards[i].patients.patientsA; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! if
-
-				if (patients.patientsA >= 0) {
-
-					wards[i].patients.patientsA
+				if (wards[i].beds - wards[i].patients.patientsA >= patients.patientsA) {
+					
+					wards[i].patients.patientsA += patients.patientsA;
+					patients.patientsA = 0;
+				}
+				else {
+					
+					patients.patientsA -= wards[i].beds - wards[i].patients.patientsA;
+					wards[i].patients.patientsA = wards[i].beds;
 				}
 			}
 			else if (wards[i].patients.patientsB != 0) {
 
-				patients.patientsB += wards[i].beds - wards[i].patients.patientsB;
+				if (wards[i].beds - wards[i].patients.patientsB >= patients.patientsB) {
+
+					wards[i].patients.patientsB += patients.patientsB;
+					patients.patientsB = 0;
+				}
+				else {
+
+					patients.patientsB -= wards[i].beds - wards[i].patients.patientsB;
+					wards[i].patients.patientsB = wards[i].beds;
+				}
 			}
 		}
 	}
@@ -205,19 +218,12 @@ public:
 		int bedsInFreeWards = 0;
 		int M = 0;
 
-		Patients patientsInNonVideWards;
-
-		patientsInNonVideWards = nonVideWards();
-
-		if (patientsInNonVideWards.patientsA >= patients.patientsA && patientsInNonVideWards.patientsA >= patients.patientsA) {
-
-
-		}
+		nonVideWards();
 
 		qsort(wards, P, sizeof(HospitalWard), compareCapacity); // I must create new array
 
 		bedsInFreeWards = videWard();
-		M = fullOccupansy(bedsInFreeWards, newA, newB);
+		//M = fullOccupansy(bedsInFreeWards, newA, newB);
 
 
 
