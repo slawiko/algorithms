@@ -83,20 +83,37 @@ int compareCapacity(const void* ward1, const void* ward2) {
 	return ward11->beds < ward22->beds ? -1 : ward11->beds > ward22->beds ? 1 : 0;;
 }
 
+int compareNumber(const void* ward1, const void* ward2) {
+
+	const HospitalWard* ward11 = (HospitalWard*)ward1;
+	const HospitalWard* ward22 = (HospitalWard*)ward2;
+
+	return ward11->number < ward22->number ? -1 : ward11->number > ward22->number ? 1 : 0;;
+}
+
 class Epidemic {
 
 public:
 
-	Patients patients;
-	int P; //number of hospital wards
+	Patients defaultPatients;
+
+	int P;
+
+	Patients currentPatients;
+
 	HospitalWard *wards;
 	HospitalWard *videWards;
 
 	Epidemic(int A, int B, int P) {
 
-		this->patients.patientsA = A;
-		this->patients.patientsB = B;
+		this->defaultPatients.patientsA = A;
+		this->defaultPatients.patientsB = B;
+
 		this->P = P;
+
+		this->currentPatients.patientsA = A;
+		this->currentPatients.patientsB = B;
+
 		this->wards = new HospitalWard[this->P];
 		this->videWards = new HospitalWard[this->P];
 	}
@@ -107,55 +124,36 @@ public:
 
 			if (wards[i].patients.patientsA != 0) {
 
-				if (wards[i].beds - wards[i].patients.patientsA >= patients.patientsA) {
+				if (wards[i].beds - wards[i].patients.patientsA >= currentPatients.patientsA) {
 					
-					wards[i].patients.patientsA += patients.patientsA;
-					patients.patientsA = 0;
+					wards[i].patients.patientsA += currentPatients.patientsA;
+					currentPatients.patientsA = 0;
 				}
 				else {
 					
-					patients.patientsA -= wards[i].beds - wards[i].patients.patientsA;
+					currentPatients.patientsA -= wards[i].beds - wards[i].patients.patientsA;
 					wards[i].patients.patientsA = wards[i].beds;
 				}
 			}
 			else if (wards[i].patients.patientsB != 0) {
 
-				if (wards[i].beds - wards[i].patients.patientsB >= patients.patientsB) {
+				if (wards[i].beds - wards[i].patients.patientsB >= currentPatients.patientsB) {
 
-					wards[i].patients.patientsB += patients.patientsB;
-					patients.patientsB = 0;
+					wards[i].patients.patientsB += currentPatients.patientsB;
+					currentPatients.patientsB = 0;
 				}
 				else {
 
-					patients.patientsB -= wards[i].beds - wards[i].patients.patientsB;
+					currentPatients.patientsB -= wards[i].beds - wards[i].patients.patientsB;
 					wards[i].patients.patientsB = wards[i].beds;
 				}
 			}
 		}
 	}
 
-	int videWard() {
-
-		int bedsInFreeWards = 0;
-		int j = 0;
-
-		for (int i = 0; i < P; i++) {
-
-			if (wards[i].patients.patientsA == 0 && wards[i].patients.patientsB == 0) {
-
-				bedsInFreeWards += wards[i].beds;
-				videWards[j++] = wards[i];
-			}
-		}
-
-		return bedsInFreeWards;
-	}
-
-	int fullOccupansy(int bedsInFreeWards, int newA, int newB) {
+	int fullOccupansy(int bedsInFreeWards) {
 
 		int *S = new int[bedsInFreeWards + 1]; // numbering of array starts on 1
-
-		int firstRightOne = 0;
 
 		for (int i = 0; i < bedsInFreeWards + 1; i++) {
 
@@ -181,7 +179,11 @@ public:
 			}
 		}
 
-		for (int i = newA; i < bedsInFreeWards + 1; i++) {
+		//---------------------------------------------------------------------
+
+		int firstRightOne = 0;
+
+		for (int i = currentPatients.patientsA; i < bedsInFreeWards + 1; i++) {
 
 			if (S[i] == 1) {
 
@@ -194,9 +196,9 @@ public:
 
 			//call a function that will calculate partial occupancy
 		}
-		else if (newB <= bedsInFreeWards - firstRightOne) {
+		else if (currentPatients.patientsB <= bedsInFreeWards - firstRightOne) {
 
-			return patients.patientsA + patients.patientsB;
+			return currentPatients.patientsA + currentPatients.patientsB;
 		}
 		else {
 
@@ -206,6 +208,23 @@ public:
 
 
 		return 0;
+	}
+
+	void videWard() {
+
+		int bedsInFreeWards = 0;
+		int j = 0;
+
+		for (int i = 0; i < P; i++) {
+
+			if (wards[i].patients.patientsA == 0 && wards[i].patients.patientsB == 0) {
+
+				bedsInFreeWards += wards[i].beds;
+				videWards[j++] = wards[i];
+			}
+		}
+
+		fullOccupansy(bedsInFreeWards);
 	}
 
 	int partialOssupancy() {
@@ -220,15 +239,18 @@ public:
 
 		nonVideWards();
 
-		qsort(wards, P, sizeof(HospitalWard), compareCapacity); // I must create new array
+		if (currentPatients.patientsA == 0 && currentPatients.patientsB == 0) {
 
-		bedsInFreeWards = videWard();
-		//M = fullOccupansy(bedsInFreeWards, newA, newB);
+			M = defaultPatients.patientsA + defaultPatients.patientsB;
+			return M;
+		}
+
+		qsort(wards, P, sizeof(HospitalWard), compareCapacity);
+
+		videWard();
 
 
-
-
-		return M;	
+		// -------------------------------------------------
 	}
 };
 
@@ -262,7 +284,17 @@ int main() {
 
 	M = epidemic.task();
 
-	fout << M;
+	fout << M << endl;
+
+	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compareNumber);
+
+	for (int i = 0; i < epidemic.P; i++) {
+
+		if (epidemic.wards[i].patients.patientsA != 0) {
+
+			fout << epidemic.wards[i].number + 1 << " "; //+1 because array starts with 0
+		}
+	}
 
 	return 0;
 }
@@ -273,13 +305,9 @@ int main() {
 
 
 /*
--------! переработать рассмотрение уже "слегка" наполненных палат (создать отдельные поля для подсчета !!размещенных!! больных каждым гриппом (возможно даже отдельные функции))
--------! в функции task написать вызовы функций (п.1) и проверку на размещение всех больных в палаты из п.1. Если размещаются - return структурку больных и номера палат для больных А (optionally).
+-------! в функции task написать вызовы функций (п.1) и проверку на размещение всех больных в палаты из п.1. Если размещаются - return структурку больных.
 			Если не размещаются - вызывать функцию подсчета для пустых палат.
--------! в функции для пустых палат (videWards)
-
-
-доделать частичное размещение сука заебало
+-------! в функции для пустых палат (videWards) доделать частичное размещение сука заебало
 
 
 */
