@@ -193,22 +193,32 @@ public:
 
 		for (int i = 0; i < P; i++) {
 
-			S[videWards[i].beds].index = 1;
-			S[videWards[i].beds].ancestry.push_back(videWards[i].number);
-
 			latestOne += videWards[i].beds;
 
-			S[latestOne].index = 1;
-			S[latestOne].ancestry.push_back(videWards[i].number);
+			if (S[videWards[i].beds].ancestry.size() == 0) {
 
-			for (int j = videWards[i].beds - 1; j > 0; j--) {
+				S[videWards[i].beds].ancestry.push_back(videWards[i].number);
+			}
+
+			for (int j = latestOne - 1; j > 0; j--) {
 
 				if (S[j].index == 1) {
 
 					S[j + videWards[i].beds].index = 1;
-					S[j + videWards[i].beds].ancestry.push_back(j);
+
+					if (S[j + videWards[i].beds].ancestry.size() < S[j].ancestry.size() + 1) {
+
+						for (int k = 0; k < S[j].ancestry.size(); k++) {
+
+							S[j + videWards[i].beds].ancestry.push_back(S[j].ancestry[k]);
+						}
+
+						S[j + videWards[i].beds].ancestry.push_back(videWards[i].number);
+					}
 				}
 			}
+
+			S[videWards[i].beds].index = 1;
 		}
 
 		//---------------------------------------------------------------------
