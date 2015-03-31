@@ -234,17 +234,28 @@ public:
 			}
 		}
 
-		if (firstRightOne == 0) {
+		if (firstRightOne != 0) {
 
-			//call a function that will calculate partial occupancy
-		}
-		else if (currentPatients.patientsB <= bedsInFreeWards - firstRightOne) {
+			for (int i = 0; i < S[firstRightOne].ancestry.size(); i++) {
 
-			return currentPatients.patientsA + currentPatients.patientsB;
+				int temp = S[firstRightOne].ancestry[i];
+				int difference = wards[temp].beds - wards[temp].patients.patientsA;
+
+				if (currentPatients.patientsA >= difference) {
+
+					wards[temp].patients.patientsA = wards[temp].beds;
+					currentPatients.patientsA -= difference;
+				}
+				else {
+
+					wards[temp].patients.patientsA = currentPatients.patientsA;
+					currentPatients.patientsA = 0;
+				}
+			}
 		}
 		else {
 
-			//call a function that will calculate partial occupancy
+			//call a function partialOccupancy
 		}
 
 
@@ -252,7 +263,7 @@ public:
 		return 0;
 	}
 
-	int partialOssupancy() {
+	int partialOccupancy() {
 
 		return 0;
 	}
@@ -270,7 +281,7 @@ public:
 			return M;
 		}
 
-		qsort(wards, P, sizeof(HospitalWard), compareCapacity);
+		qsort(wards, P, sizeof(HospitalWard), compareNumber);
 
 		videWard();
 
@@ -311,7 +322,7 @@ int main() {
 
 	fout << M << endl;
 
-	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compareNumber);
+	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compareCapacity);
 
 	for (int i = 0; i < epidemic.P; i++) {
 
