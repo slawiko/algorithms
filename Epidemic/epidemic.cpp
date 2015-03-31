@@ -180,7 +180,7 @@ public:
 	}
 
 
-	int fullOccupansy(int bedsInFreeWards) {
+	void fullOccupansy(int bedsInFreeWards) {
 
 		Element *S = new Element[bedsInFreeWards + 1]; // numbering of array starts on 1
 
@@ -189,11 +189,15 @@ public:
 			S[i].ancestry.reserve(P);
 		}
 
+		S[0].index = 1;
+
 		int latestOne = 0;
 
 		for (int i = 0; i < P; i++) {
 
 			latestOne += videWards[i].beds;
+
+			if (videWards[i].beds == 0) break;
 
 			if (S[videWards[i].beds].ancestry.size() == 0) {
 
@@ -221,8 +225,6 @@ public:
 			S[videWards[i].beds].index = 1;
 		}
 
-		//---------------------------------------------------------------------
-
 		int firstRightOne = 0;
 
 		for (int i = currentPatients.patientsA; i < bedsInFreeWards + 1; i++) {
@@ -234,7 +236,7 @@ public:
 			}
 		}
 
-		if (firstRightOne != 0) {
+		if ((firstRightOne != 0) && (bedsInFreeWards - firstRightOne >= currentPatients.patientsB)) {
 
 			for (int i = 0; i < S[firstRightOne].ancestry.size(); i++) {
 
@@ -252,20 +254,76 @@ public:
 					currentPatients.patientsA = 0;
 				}
 			}
+
+			currentPatients.patientsB = 0;
+			return;
 		}
 		else {
 
-			//call a function partialOccupancy
+			int firstleftOneA = 0;
+			int firstleftOneB = 0;
+
+			for (int i = currentPatients.patientsA; i > 0; i--) {
+
+				if (S[i].index == 1) {
+
+					firstleftOneA = i;
+					break;
+				}
+			}
+			for (int i = currentPatients.patientsB; i > 0; i--) {
+
+				if (S[i].index == 1) {
+
+					firstleftOneB = i;
+					break;
+				}
+			}
+
+			partialOccupancy(bedsInFreeWards, firstleftOneA, firstleftOneB);
+			return;
+		}
+	}
+
+	void partialOccupancy(int bedsInFreeWards, int firstLeftOneA, int firstLeftOneB) {
+
+		int lostBedsForB = bedsInFreeWards - firstLeftOneA;
+		int happyB = 0;
+
+		if (lostBedsForB > currentPatients.patientsB) {
+
+			happyB = currentPatients.patientsB;
+		}
+		else {
+
+			happyB = lostBedsForB;
 		}
 
 
+		int lostBedsForA = bedsInFreeWards - firstLeftOneB;
+		int happyA = 0;
 
-		return 0;
-	}
+		if (lostBedsForA > currentPatients.patientsA) {
 
-	int partialOccupancy() {
+			happyA = currentPatients.patientsA;
+		}
+		else {
 
-		return 0;
+			happyA = lostBedsForA;
+		}
+
+		if (happyB + firstLeftOneA > happyA + firstLeftOneB) {
+
+			currentPatients.patientsA -= firstLeftOneA;
+			currentPatients.patientsB -= happyB;
+		}
+		else {
+
+			currentPatients.patientsA -= happyA;
+			currentPatients.patientsB -= firstLeftOneB;
+		}
+		
+		return;
 	}
 
 	int task() {
@@ -285,8 +343,8 @@ public:
 
 		videWard();
 
-
-		// -------------------------------------------------
+		M = (defaultPatients.patientsA - currentPatients.patientsA) + (defaultPatients.patientsB - currentPatients.patientsB);
+		return M;
 	}
 };
 
@@ -324,26 +382,16 @@ int main() {
 
 	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compareCapacity);
 
-	for (int i = 0; i < epidemic.P; i++) {
+	if (epidemic.currentPatients.patientsA == 0 && epidemic.currentPatients.patientsB == 0) {
 
-		if (epidemic.wards[i].patients.patientsA != 0) {
+		for (int i = 0; i < epidemic.P; i++) {
 
-			fout << epidemic.wards[i].number + 1 << " "; //+1 because array starts with 0
+			if (epidemic.wards[i].patients.patientsA != 0) {
+
+				fout << epidemic.wards[i].number + 1 << " "; //+1 because array starts with 0
+			}
 		}
 	}
 
 	return 0;
 }
-
-
-
-
-
-
-/*
--------! в функции task написать вызовы функций (п.1) и проверку на размещение всех больных в палаты из п.1. Если размещаются - return структурку больных.
-			Если не размещаются - вызывать функцию подсчета для пустых палат.
--------! в функции для пустых палат (videWards) доделать частичное размещение сука заебало
-
-
-*/
