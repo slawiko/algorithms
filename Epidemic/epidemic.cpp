@@ -133,7 +133,7 @@ public:
 
 		for (int i = 0; i < P; i++) {
 
-			if (wards[i].patients.patientsA != 0) {
+			if (wards[i].patients.patientsA != 0/* && currentPatients.patientsA != 0*/) {
 
 				if (wards[i].beds - wards[i].patients.patientsA >= currentPatients.patientsA) {
 					
@@ -146,7 +146,7 @@ public:
 					wards[i].patients.patientsA = wards[i].beds;
 				}
 			}
-			else if (wards[i].patients.patientsB != 0) {
+			else if (wards[i].patients.patientsB != 0/* && currentPatients.patientsA != 0*/) {
 
 				if (wards[i].beds - wards[i].patients.patientsB >= currentPatients.patientsB) {
 
@@ -378,11 +378,13 @@ int main() {
 
 	M = epidemic.task();
 
-	fout << M << endl;
+	fout << M;
 
-	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compareCapacity);
+	qsort(epidemic.wards, epidemic.P, sizeof(HospitalWard), compareNumber);
 
-	if (epidemic.currentPatients.patientsA == 0 && epidemic.currentPatients.patientsB == 0) {
+	if (epidemic.currentPatients.patientsA == 0 && epidemic.currentPatients.patientsB == 0 && epidemic.defaultPatients.patientsA != 0) {
+
+		fout << endl;
 
 		for (int i = 0; i < epidemic.P; i++) {
 
