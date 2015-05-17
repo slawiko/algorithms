@@ -12,6 +12,8 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.lastcodeanalysissucceeded
+*.xml
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
