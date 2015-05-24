@@ -11,7 +11,6 @@ struct Node {
 	Node* left;
 	Node* right;
 	Node* father;
-	int height;
 
 	Node() {
 		this->number = 0;
@@ -19,7 +18,6 @@ struct Node {
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
-		this->height = 0;
 	}
 	Node(long frequency) {
 		this->number = INT_MAX;
@@ -27,7 +25,6 @@ struct Node {
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
-		this->height = 0;
 	}
 	Node(int number, long frequency) {
 		this->number = number;
@@ -35,7 +32,6 @@ struct Node {
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
-		this->height = 0;
 	}
 	Node(int number, long frequency, Node *left, Node *right) {
 		this->number = number;
@@ -43,17 +39,17 @@ struct Node {
 		this->left = left;
 		this->right = right;
 		this->father = NULL;
-		this->height = 0;
 	}
 };
 
 struct LessThanByFrequency {
 	bool operator()(const Node& first, const Node& second) const{
-		if (first.frequency != second.frequency) {
+		/*if (first.frequency != second.frequency) {
 			return first.frequency > second.frequency;
 		} else {
-			return first.number > second.number;
-		}
+			return first.number < second.number;
+		}*/
+		return first.frequency > second.frequency;
 	}
 };
 
@@ -74,6 +70,24 @@ Node treeBuilding(priority_queue<Node, vector<Node>, LessThanByFrequency> nodes)
 	return root;
 }
 
+long huffmanCodeLength(int height, Node *node) {
+	long length = 0;
+	if (!node->left && !node->right) {
+		length += height * node->frequency;
+	}
+	else if (!node->left) {
+		length += huffmanCodeLength(height + 1, node->right);
+	}
+	else if (!node->right) {
+		length += huffmanCodeLength(height + 1, node->left);
+	}
+	else {
+		length += huffmanCodeLength(height + 1, node->left);
+		length += huffmanCodeLength(height + 1, node->right);
+	}
+	return length;
+}
+
 int main() {
 	int N;
 	ifstream fin("huffman.in");
@@ -90,11 +104,11 @@ int main() {
 	fin.close();
 
 	Node root = treeBuilding(nodes);
+	long result = huffmanCodeLength(0, &root);
 
 	ofstream fout("huffman.out");
-	int result = 0;
 	fout << result;
-
+	cout << result;
 	fout.close();
 	return 0;
 }
