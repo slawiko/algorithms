@@ -267,6 +267,9 @@ FakesAssemblies/
 # IntelliJ
 /out/
 
+#CLion
+/CMakeList.txt
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
@@ -277,3 +280,5 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
+
+Huffman/Huffman/CMakeLists.txt

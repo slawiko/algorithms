@@ -1,4 +1,3 @@
-#include "huffman.h"
 #include <iostream>
 #include <fstream>
 #include <queue>
