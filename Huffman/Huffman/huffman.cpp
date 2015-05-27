@@ -1,4 +1,3 @@
-#include "huffman.h"
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -8,7 +7,7 @@ using namespace std;
 
 struct Node {
 	int number;
-	long frequency;
+	long long frequency;
 	Node* left;
 	Node* right;
 	Node* father;
@@ -20,21 +19,21 @@ struct Node {
 		this->right = NULL;
 		this->father = NULL;
 	}
-	Node(long frequency) {
+	Node(long long frequency) {
 		this->number = INT_MAX;
 		this->frequency = frequency;
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
 	}
-	Node(int number, long frequency) {
+	Node(int number, long long frequency) {
 		this->number = number;
 		this->frequency = frequency;
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
 	}
-	Node(int number, long frequency, Node *left, Node *right) {
+	Node(int number, long long frequency, Node *left, Node *right) {
 		this->number = number;
 		this->frequency = frequency;
 		this->left = left;
@@ -45,25 +44,24 @@ struct Node {
 
 struct LessThanByFrequency {
 	bool operator()(const Node& first, const Node& second) const{
-		/*if (first.frequency != second.frequency) {
+		if (first.frequency != second.frequency) {
 			return first.frequency > second.frequency;
 		} else {
-			return first.number < second.number;
-		}*/
-		return first.frequency > second.frequency;
+			return first.number > second.number;
+		}
 	}
 };
 
 Node treeBuilding(priority_queue<Node, vector<Node>, LessThanByFrequency> nodes) {
 	while (nodes.size() > 1) {
-		Node *left = new Node(nodes.top().number, nodes.top().frequency, nodes.top().left, nodes.top().right);
+		Node left = nodes.top();
 		nodes.pop();
-		Node *right = new Node(nodes.top().number, nodes.top().frequency, nodes.top().left, nodes.top().right);
+		Node right = nodes.top();
 		nodes.pop();
-		Node *father = new Node(left->frequency + right->frequency);
-		father->left = left;
-		father->right = right;
-		left->father = right->father = father;
+		Node *father = new Node(left.frequency + right.frequency);
+		father->left = &left;
+		father->right = &right;
+		left.father = right.father = father;
 		nodes.push(*father);
 	}
 
@@ -71,8 +69,8 @@ Node treeBuilding(priority_queue<Node, vector<Node>, LessThanByFrequency> nodes)
 	return root;
 }
 
-long huffmanCodeLength(int height, Node *node) {
-	long length = 0;
+long long huffmanCodeLength(int height, Node *node) {
+	long long length = 0;
 	if (!node->left && !node->right) {
 		length += height * node->frequency;
 	}
@@ -96,7 +94,7 @@ int main() {
 
 	priority_queue<Node, vector<Node>, LessThanByFrequency> nodes;
 	int number;
-	long frequency;
+	long long frequency;
 	for (int i = 0; i < N; i++) {
 		fin >> frequency;
 		number = i + 1;
@@ -105,7 +103,7 @@ int main() {
 	fin.close();
 
 	Node root = treeBuilding(nodes);
-	long result = huffmanCodeLength(0, &root);
+	long long result = huffmanCodeLength(0, &root);
 
 	ofstream fout("huffman.out");
 	fout << result;
