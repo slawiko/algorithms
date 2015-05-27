@@ -6,35 +6,25 @@
 using namespace std;
 
 struct Node {
-	int number;
 	long long frequency;
 	Node* left;
 	Node* right;
 	Node* father;
 
 	Node() {
-		this->number = 0;
 		this->frequency = 0;
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
 	}
 	Node(long long frequency) {
-		this->number = INT_MAX;
 		this->frequency = frequency;
 		this->left = NULL;
 		this->right = NULL;
 		this->father = NULL;
 	}
-	Node(int number, long long frequency) {
-		this->number = number;
-		this->frequency = frequency;
-		this->left = NULL;
-		this->right = NULL;
-		this->father = NULL;
-	}
-	Node(int number, long long frequency, Node *left, Node *right) {
-		this->number = number;
+
+	Node(long long frequency, Node *left, Node *right) {
 		this->frequency = frequency;
 		this->left = left;
 		this->right = right;
@@ -44,24 +34,20 @@ struct Node {
 
 struct LessThanByFrequency {
 	bool operator()(const Node& first, const Node& second) const{
-		if (first.frequency != second.frequency) {
-			return first.frequency > second.frequency;
-		} else {
-			return first.number > second.number;
-		}
+		return first.frequency > second.frequency;
 	}
 };
 
 Node treeBuilding(priority_queue<Node, vector<Node>, LessThanByFrequency> nodes) {
 	while (nodes.size() > 1) {
-		Node left = nodes.top();
+		Node *left = new Node(nodes.top().frequency, nodes.top().left, nodes.top().right);
 		nodes.pop();
-		Node right = nodes.top();
+		Node *right = new Node(nodes.top().frequency, nodes.top().left, nodes.top().right);
 		nodes.pop();
-		Node *father = new Node(left.frequency + right.frequency);
-		father->left = &left;
-		father->right = &right;
-		left.father = right.father = father;
+		Node *father = new Node(left->frequency + right->frequency);
+		father->left = left;
+		father->right = right;
+		left->father = right->father = father;
 		nodes.push(*father);
 	}
 
@@ -93,12 +79,10 @@ int main() {
 	fin >> N;
 
 	priority_queue<Node, vector<Node>, LessThanByFrequency> nodes;
-	int number;
 	long long frequency;
 	for (int i = 0; i < N; i++) {
 		fin >> frequency;
-		number = i + 1;
-		nodes.push(Node(number, frequency));
+		nodes.push(Node(frequency));
 	}
 	fin.close();
 

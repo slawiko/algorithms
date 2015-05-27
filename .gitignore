@@ -56,6 +56,11 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+# Other
+*.sln
+*.filters
+*.vcxproj
+
 # Visual Studo 2015 cache/options directory
 .vs/
 
@@ -269,6 +274,7 @@ FakesAssemblies/
 
 #CLion
 /CMakeList.txt
+Huffman/Huffman/CMakeLists.txt
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -281,4 +287,4 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
-Huffman/Huffman/CMakeLists.txt
+
