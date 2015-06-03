@@ -17,17 +17,12 @@ int main() {
 	sequence = new int[n];
 	for (int i = 0; i < n; i++) {
 		fin >> sequence[i];
-		fout << sequence[i] << " ";// !
 	}
-	fout << endl; // !
 	fin.close();
 
 	int **tempMatr = new int *[m + 1];
 	for (int i = 0; i < m + 1; i++) {
 		tempMatr[i] = new int[n];
-	}
-	for (int j = 0; j < n; j++) {
-		tempMatr[0][j] = 0;
 	}
 
 	for (int i = 0; i < m + 1; i++) {
@@ -41,13 +36,6 @@ int main() {
 					tempMatr[i][j] = max(tempMatr[i][j], tempMatr[i - 1][k] + 1);
 				}
 			}
-			for (int i1 = 0; i1 < m + 1; i1++) {
-				for (int j1 = 0; j1 < n; j1++) {
-					fout << tempMatr[i1][j1] << " ";
-				}
-				fout << endl;
-			}
-			fout << endl;
 		}
 	}
 
