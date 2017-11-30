@@ -8,15 +8,14 @@ struct Edge {
 };
 
 int dfs(std::vector<std::vector<int>>& vs, std::vector<bool>& marks, int cur, int prev, std::vector<Edge>& result) {
-    int index = cur - 1;
-    if (marks[index]) {
+    if (marks[cur]) {
         return 0;
     }
-    marks[index] = true;
+    marks[cur] = true;
     int counter = 0;
-    for (int i = 0; i < vs[index].size(); ++i) {
-        if (vs[index][i] != prev && !marks[vs[index][i] - 1]) {
-            if (dfs(vs, marks, vs[index][i], cur, result) == 1) {
+    for (int i = 0; i < vs[cur].size(); ++i) {
+        if (vs[cur][i] != prev && !marks[vs[cur][i]]) {
+            if (dfs(vs, marks, vs[cur][i], cur, result) == 1) {
                 counter++;
             }
         }
@@ -42,8 +41,10 @@ int main() {
     int to;
     for (int i = 0; i < m; ++i) {
         std::cin >> from >> to;
-        vertices[from - 1].push_back(to);
-        vertices[to - 1].push_back(from);
+        from--;
+        to--;
+        vertices[from].push_back(to);
+        vertices[to].push_back(from);
     }
 
     std::vector<Edge> result;
@@ -54,6 +55,10 @@ int main() {
     int tmp;
 
     for (int i = 0; i < n; ++i) {
+        if (vertices[i].size() == 0) {
+            std::cout << -1;
+            return 0;
+        }
         tmp = dfs(vertices, marks, vertices[i][0], -1, result);
         if (tmp == -1) {
             std::cout << -1;
@@ -64,7 +69,7 @@ int main() {
     std::cout << result.size() << '\n';
 
     for (int i = 0; i < result.size(); ++i) {
-        std::cout << result[i].from << ' ' << result[i].to << '\n';
+        std::cout << result[i].from + 1 << ' ' << result[i].to + 1 << '\n';
     }
 
     return 0;
