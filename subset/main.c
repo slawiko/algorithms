@@ -35,9 +35,9 @@ int* find_subset(const int* a, const int* b, int n, int k, int b_max) {
         for (int i = 0; i < k; ++i) {
             set_sum += sums[i].v;
         }
-        if (set_sum > m) {
+        if (set_sum > 0) {
             l = m;
-        } else if (set_sum < m) {
+        } else if (set_sum < 0) {
             r = m;
         } else {
             break;
