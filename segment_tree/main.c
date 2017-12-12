@@ -21,8 +21,8 @@ void calc_add_info(struct Vertex* v) {
     }
     if (v->value == -1) {
         v->odd_sum = v->l->odd_sum + v->r->odd_sum;
-        v->even_sum = v->l->even_sum + v->r->even_sum;
         v->odd_cnt = v->l->odd_cnt + v->r->odd_cnt;
+        v->even_sum = v->l->even_sum + v->r->even_sum;
         v->even_cnt = v->l->even_cnt + v->r->even_cnt;
     } else {
         bool is_even = v->value % 2 == 0;
@@ -153,6 +153,16 @@ long getSumOdd(struct Vertex* v, int l, int r) {
     return getSumOdd(v->l, l, r) + getSumOdd(v->r, l, r);
 }
 
+void clean(struct Vertex* v) {
+    if (v->l != NULL) {
+        clean(v->l);
+    }
+    if (v->r != NULL) {
+        clean(v->r);
+    }
+    free(v);
+}
+
 int main() {
     int n, q;
     scanf("%d %d", &n, &q);
@@ -171,25 +181,27 @@ int main() {
     for (int i = 0; i < q; ++i) {
         scanf("%d", &cmd_buffer);
         scanf("%d %d", &param1, &param2);
-//        param1--;
+        param1--;
         switch (cmd_buffer) {
             case 1:
                 set(root, param1, param2);
                 break;
             case 2:
-//                param2--;
+                param2--;
                 inc(root, param1, param2, 1);
                 break;
             case 3:
-//                param2--;
+                param2--;
                 printf("%ld\n", getSumEven(root, param1, param2));
                 break;
             case 4:
-//                param2--;
+                param2--;
                 printf("%ld\n", getSumOdd(root, param1, param2));
                 break;
         }
     }
 
+    free(a);
+    clean(root);
     return 0;
 }
