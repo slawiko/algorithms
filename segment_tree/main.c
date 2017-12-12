@@ -8,8 +8,8 @@ struct Vertex {
     int to;
     struct Vertex* l;
     struct Vertex* r;
-    long odd_sum;
-    long even_sum;
+    long long odd_sum;
+    long long even_sum;
     int odd_cnt;
     int even_cnt;
     int incr_cnt;
@@ -30,6 +30,20 @@ void calc_add_info(struct Vertex* v) {
         v->even_sum = is_even ? v->value : 0;
         v->odd_cnt = is_even ? 0 : 1;
         v->even_cnt = is_even ? 1 : 0;
+    }
+    if (v->incr_cnt > 0) {
+        v->odd_sum += v->odd_cnt * v->incr_cnt;
+        v->even_sum += v->even_cnt * v->incr_cnt;
+
+        if (v->incr_cnt % 2 == 1) {
+            v->odd_sum = v->odd_sum ^ v->even_sum;
+            v->even_sum = v->odd_sum ^ v->even_sum;
+            v->odd_sum = v->odd_sum ^ v->even_sum;
+
+            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
+            v->even_cnt = v->odd_cnt ^ v->even_cnt;
+            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
+        }
     }
 }
 
@@ -60,6 +74,27 @@ void init(struct Vertex* v, int* a, int n, int from) {
     calc_add_info(v);
 }
 
+void incr_incr(struct Vertex* v, int incr) {
+    if (v->incr_cnt == -1) {
+        v->value += incr;
+    } else {
+        v->incr_cnt += incr;
+    }
+}
+
+void check_if_incr(struct Vertex* v) {
+    if (v == NULL) {
+        return;
+    }
+    if (v->incr_cnt > 0 && v->value == -1) {
+        incr_incr(v->l, v->incr_cnt);
+        calc_add_info(v->l);
+        incr_incr(v->r, v->incr_cnt);
+        calc_add_info(v->r);
+        v->incr_cnt = 0;
+    }
+}
+
 void inc(struct Vertex* v, int l, int r, int c) {
     if (v == NULL) {
         return;
@@ -68,41 +103,20 @@ void inc(struct Vertex* v, int l, int r, int c) {
     if (v->to < r) r = v->to;
     if (l > r) return;
 
+    check_if_incr(v);
+
     if (v->from == l && v->to == r) {
-        if (v->incr_cnt != -1) {
-            v->incr_cnt += c;
-        } else {
+        if (v->incr_cnt == -1) {
             v->value += c;
-        }
-
-        v->odd_sum += v->odd_cnt * c;
-        v->even_sum += v->even_cnt * c;
-
-        if (c % 2 == 1) {
-            v->odd_sum = v->odd_sum ^ v->even_sum;
-            v->even_sum = v->odd_sum ^ v->even_sum;
-            v->odd_sum = v->odd_sum ^ v->even_sum;
-
-            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
-            v->even_cnt = v->odd_cnt ^ v->even_cnt;
-            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
+        } else {
+            v->incr_cnt += c;
         }
     } else {
-        inc(v->l, l, r, c);
-        inc(v->r, l, r, c);
-        calc_add_info(v);
-    }
-}
-
-void check_if_incr(struct Vertex* v) {
-    if (v == NULL) {
-        return;
-    }
-    if (v->incr_cnt > 0) {
-        inc(v->l, v->from, v->to, v->incr_cnt);
-        inc(v->r, v->from, v->to, v->incr_cnt);
+        inc(v->l, l, r, c + v->incr_cnt);
+        inc(v->r, l, r, c + v->incr_cnt);
         v->incr_cnt = 0;
     }
+    calc_add_info(v);
 }
 
 void set(struct Vertex* v, int pos, int value) {
@@ -112,18 +126,19 @@ void set(struct Vertex* v, int pos, int value) {
     if (v->from > pos || pos > v->to) {
         return;
     }
+
     check_if_incr(v);
+
     if (v->from == pos && v->to == pos) {
         v->value = value;
-        calc_add_info(v);
     } else {
         set(v->l, pos, value);
         set(v->r, pos, value);
-        calc_add_info(v);
     }
+    calc_add_info(v);
 }
 
-long getSumEven(struct Vertex* v, int l, int r) {
+long long getSumEven(struct Vertex* v, int l, int r) {
     if (v == NULL) {
         return 0;
     }
@@ -138,7 +153,7 @@ long getSumEven(struct Vertex* v, int l, int r) {
     return getSumEven(v->l, l, r) + getSumEven(v->r, l, r);
 }
 
-long getSumOdd(struct Vertex* v, int l, int r) {
+long long getSumOdd(struct Vertex* v, int l, int r) {
     if (v == NULL) {
         return 0;
     }
@@ -192,11 +207,11 @@ int main() {
                 break;
             case 3:
                 param2--;
-                printf("%ld\n", getSumEven(root, param1, param2));
+                printf("%lld\n", getSumEven(root, param1, param2));
                 break;
             case 4:
                 param2--;
-                printf("%ld\n", getSumOdd(root, param1, param2));
+                printf("%lld\n", getSumOdd(root, param1, param2));
                 break;
         }
     }
