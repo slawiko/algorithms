@@ -15,38 +15,38 @@ struct Vertex {
 int cmp (const void * a, const void * b) {
     return (*(int*)a - *(int*)b);
 }
-//
-//void calc_add_info(struct Vertex* v) {
-//    if (v == NULL) {
-//        return;
-//    }
-//    if (v->value == -1) {
-//        v->odd_sum = v->l->odd_sum + v->r->odd_sum;
-//        v->odd_cnt = v->l->odd_cnt + v->r->odd_cnt;
-//        v->even_sum = v->l->even_sum + v->r->even_sum;
-//        v->even_cnt = v->l->even_cnt + v->r->even_cnt;
-//    } else {
-//        bool is_even = v->value % 2 == 0;
-//        v->odd_sum = is_even ? 0 : v->value;
-//        v->even_sum = is_even ? v->value : 0;
-//        v->odd_cnt = is_even ? 0 : 1;
-//        v->even_cnt = is_even ? 1 : 0;
-//    }
-//    if (v->incr_cnt > 0) {
-//        v->odd_sum += v->odd_cnt * v->incr_cnt;
-//        v->even_sum += v->even_cnt * v->incr_cnt;
-//
-//        if (v->incr_cnt % 2 == 1) {
-//            v->odd_sum = v->odd_sum ^ v->even_sum;
-//            v->even_sum = v->odd_sum ^ v->even_sum;
-//            v->odd_sum = v->odd_sum ^ v->even_sum;
-//
-//            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
-//            v->even_cnt = v->odd_cnt ^ v->even_cnt;
-//            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
-//        }
-//    }
-//}
+
+void calc_add_info(struct Vertex* v) {
+    if (v == NULL) {
+        return;
+    }
+    if (v->value == -1) {
+        v->odd_sum = v->l->odd_sum + v->r->odd_sum;
+        v->odd_cnt = v->l->odd_cnt + v->r->odd_cnt;
+        v->even_sum = v->l->even_sum + v->r->even_sum;
+        v->even_cnt = v->l->even_cnt + v->r->even_cnt;
+    } else {
+        bool is_even = v->value % 2 == 0;
+        v->odd_sum = is_even ? 0 : v->value;
+        v->even_sum = is_even ? v->value : 0;
+        v->odd_cnt = is_even ? 0 : 1;
+        v->even_cnt = is_even ? 1 : 0;
+    }
+    if (v->incr_cnt > 0) {
+        v->odd_sum += v->odd_cnt * v->incr_cnt;
+        v->even_sum += v->even_cnt * v->incr_cnt;
+
+        if (v->incr_cnt % 2 == 1) {
+            v->odd_sum = v->odd_sum ^ v->even_sum;
+            v->even_sum = v->odd_sum ^ v->even_sum;
+            v->odd_sum = v->odd_sum ^ v->even_sum;
+
+            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
+            v->even_cnt = v->odd_cnt ^ v->even_cnt;
+            v->odd_cnt = v->odd_cnt ^ v->even_cnt;
+        }
+    }
+}
 
 void init(struct Vertex* v, int* a, int n, int i_from,  int from, int to) {
     if (v == NULL) {
@@ -71,26 +71,26 @@ void init(struct Vertex* v, int* a, int n, int i_from,  int from, int to) {
     v->cnt = n;
 }
 
-//void incr_incr(struct Vertex* v, int incr) {
-//    if (v->incr_cnt == -1) {
-//        v->value += incr;
-//    } else {
-//        v->incr_cnt += incr;
-//    }
-//}
-//
-//void check_if_incr(struct Vertex* v) {
-//    if (v == NULL) {
-//        return;
-//    }
-//    if (v->incr_cnt > 0 && v->value == -1) {
-//        incr_incr(v->l, v->incr_cnt);
-//        calc_add_info(v->l);
-//        incr_incr(v->r, v->incr_cnt);
-//        calc_add_info(v->r);
-//        v->incr_cnt = 0;
-//    }
-//}
+void incr_incr(struct Vertex* v, int incr) {
+    if (v->incr_cnt == -1) {
+        v->value += incr;
+    } else {
+        v->incr_cnt += incr;
+    }
+}
+
+void check_if_incr(struct Vertex* v) {
+    if (v == NULL) {
+        return;
+    }
+    if (v->incr_cnt > 0 && v->value == -1) {
+        incr_incr(v->l, v->incr_cnt);
+        calc_add_info(v->l);
+        incr_incr(v->r, v->incr_cnt);
+        calc_add_info(v->r);
+        v->incr_cnt = 0;
+    }
+}
 //
 //void inc(struct Vertex* v, int l, int r, int c) {
 //    if (v == NULL) {
@@ -116,24 +116,24 @@ void init(struct Vertex* v, int* a, int n, int i_from,  int from, int to) {
 //    calc_add_info(v);
 //}
 //
-//void set(struct Vertex* v, int pos, int value) {
-//    if (v == NULL) {
-//        return;
-//    }
-//    if (v->from > pos || pos > v->to) {
-//        return;
-//    }
-//
-//    check_if_incr(v);
-//
-//    if (v->from == pos && v->to == pos) {
-//        v->value = value;
-//    } else {
-//        set(v->l, pos, value);
-//        set(v->r, pos, value);
-//    }
-//    calc_add_info(v);
-//}
+struct Vertex* set(struct Vertex* v, int value) {
+    if (v == NULL) {
+        return;
+    }
+    if (v->from > pos || pos > v->to) {
+        return;
+    }
+
+    check_if_incr(v);
+
+    if (v->from == pos && v->to == pos) {
+        v->value = value;
+    } else {
+        set(v->l, pos, value);
+        set(v->r, pos, value);
+    }
+    calc_add_info(v);
+}
 //
 //long long getSumEven(struct Vertex* v, int l, int r) {
 //    if (v == NULL) {
@@ -203,9 +203,9 @@ int main() {
     for (int i = 0; i < N + 1; ++i) {
         roots[i] = (struct Vertex*)malloc(sizeof(struct Vertex));
         if (i == 0) {
-            init(roots[0], clean_a, clean_N, 0, clean_a[0], clean_a[clean_N - 1]);
+            init(roots[i], clean_a, clean_N, 0, clean_a[0], clean_a[clean_N - 1]);
         } else {
-
+            roots[i] = set(roots[i - 1], a[i - 1]);
         }
     }
 
@@ -215,6 +215,8 @@ int main() {
     }
 
     free(a);
-    clean(roots[0]);
+    for (int i = 0; i < N + 1; ++i) {
+        clean(roots[i]);
+    }
     return 0;
 }
